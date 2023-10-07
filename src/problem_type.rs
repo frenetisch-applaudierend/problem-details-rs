@@ -1,7 +1,8 @@
 use http::Uri;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ProblemType(Uri);
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+pub struct ProblemType(#[cfg_attr(feature = "serde", serde(with = "crate::serde::uri"))] Uri);
 
 impl std::convert::From<Uri> for ProblemType {
     fn from(value: Uri) -> Self {
