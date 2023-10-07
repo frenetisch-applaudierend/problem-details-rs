@@ -113,11 +113,11 @@ pub(crate) mod status {
         http_serde::status_code::serialize(value, serializer)
     }
 
-    pub fn deserialize<'de, D: serde::Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<http::StatusCode, D::Error> {
-        http_serde::status_code::deserialize(deserializer)
-    }
+    // pub fn deserialize<'de, D: serde::Deserializer<'de>>(
+    //     deserializer: D,
+    // ) -> Result<http::StatusCode, D::Error> {
+    //     http_serde::status_code::deserialize(deserializer)
+    // }
 
     pub mod opt {
         use super::StatusVisitor;

@@ -2,24 +2,92 @@ use http::{StatusCode, Uri};
 
 use crate::ProblemType;
 
+/// A RFC 9457 / RFC 7807 problem details object.
+///
+/// # Creating problem details
+///
+/// You can create a new problem details from a given
+/// status code using [`ProblemDetails::from_status_code`].
+/// 
+/// This will set the `status` field to the given status code,
+/// the `title` field to the canonical reason phrase of the status code,
+/// and the `type` field to none, which is equivalen to `about:blank`.
+/// 
+/// ```rust
+/// use problem_details::{ProblemDetails, StatusCode};
+/// 
+/// let details = ProblemDetails::from_status_code(StatusCode::NOT_FOUND);
+/// 
+/// assert_eq!(details.status, Some(StatusCode::NOT_FOUND));
+/// assert_eq!(details.title, Some("Not Found".to_string()));
+/// assert_eq!(details.r#type.unwrap_or_default(), problem_details::ProblemType::default());
+/// ```
+/// 
+/// You can then use the builder pattern to add additional fields.
+/// 
+/// ```rust
+/// use problem_details::{ProblemDetails, StatusCode, Uri};
+/// 
+/// let details = ProblemDetails::from_status_code(StatusCode::NOT_FOUND)
+///    .with_type(Uri::from_static("example:type"))
+///    .with_title("There is something wrong");
+/// 
+/// assert_eq!(details.status, Some(StatusCode::NOT_FOUND));
+/// assert_eq!(details.title, Some("There is something wrong".to_string()));
+/// assert_eq!(details.r#type.unwrap_or_default(), Uri::from_static("example:type").into());
+/// ```
+/// 
+/// You can also create a new problem details object using [`ProblemDetails::new`].
+/// 
+/// ```rust
+/// use problem_details::{ProblemDetails, Uri};
+/// 
+/// let details = ProblemDetails::new()
+///   .with_type(Uri::from_static("example:type"))
+///   .with_title("There is something wrong");
+/// 
+/// assert_eq!(details.status, None);
+/// assert_eq!(details.title, Some("There is something wrong".to_string()));
+/// assert_eq!(details.r#type.unwrap_or_default(), Uri::from_static("example:type").into());
+/// ```
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct ProblemDetails {
+    /// An optional uri describing the problem type.
+    /// 
+    /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-type]() for more information.
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
     pub r#type: Option<ProblemType>,
+
+    /// An optional status code for this problem.
+    /// 
+    /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-status]() for more information.
     #[cfg_attr(feature = "serde", serde(with = "crate::serde::status::opt"))]
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
     pub status: Option<StatusCode>,
+
+    /// An optional human-readable title for this problem.
+    /// 
+    /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-title]() for more information.
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
     pub title: Option<String>,
+
+    /// An optional human-readable description of this problem.
+    /// 
+    /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-detail]() for more information.
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
     pub detail: Option<String>,
+
+    /// An optional uri identifying the specific instance of this problem.
+    /// 
+    /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-instance]() for more information.
     #[cfg_attr(feature = "serde", serde(with = "crate::serde::uri::opt"))]
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
     pub instance: Option<Uri>,
 }
 
 impl ProblemDetails {
+    /// Creates a new empty problem details object.
     pub fn new() -> Self {
         ProblemDetails {
             r#type: None,
@@ -30,7 +98,12 @@ impl ProblemDetails {
         }
     }
 
-    pub fn from_status(status: StatusCode) -> Self {
+    /// Creates a new problem details object from a given status code.
+    /// 
+    /// This will set the `status` field to the given status code,
+    /// the `title` field to the canonical reason phrase of the status code,
+    /// and the `type` field to none, which is equivalent to `about:blank`.
+    pub fn from_status_code(status: StatusCode) -> Self {
         ProblemDetails {
             r#type: None,
             status: Some(status),
@@ -40,26 +113,31 @@ impl ProblemDetails {
         }
     }
 
+    /// Builder-style method that sets the `type` field of this problem details object.
     pub fn with_type(mut self, r#type: impl Into<ProblemType>) -> Self {
         self.r#type = Some(r#type.into());
         self
     }
 
+    /// Builder-style method that sets the `status` field of this problem details object.
     pub fn with_status(mut self, status: impl Into<StatusCode>) -> Self {
         self.status = Some(status.into());
         self
     }
 
+    /// Builder-style method that sets the `title` field of this problem details object.
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
+    /// Builder-style method that sets the `detail` field of this problem details object.
     pub fn with_detail(mut self, detail: impl Into<String>) -> Self {
         self.detail = Some(detail.into());
         self
     }
 
+    /// Builder-style method that sets the `instance` field of this problem details object.
     pub fn with_instance(mut self, instance: impl Into<Uri>) -> Self {
         self.instance = Some(instance.into());
         self
@@ -74,7 +152,7 @@ mod tests {
 
     #[test]
     fn from_status() {
-        let details = ProblemDetails::from_status(StatusCode::NOT_FOUND);
+        let details = ProblemDetails::from_status_code(StatusCode::NOT_FOUND);
 
         assert_eq!(
             details.r#type.unwrap_or_default(),
