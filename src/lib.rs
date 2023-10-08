@@ -4,17 +4,15 @@
 //! represent a problem details object as defined in RFC 9457
 //! (which obsoletes RFC 7807).
 //!
-//! ## Features
+//! # Features
 //!
 //! - `serde`: Enables serde support for the `ProblemDetails` struct.
 
-mod extensions;
 mod problem_details;
 mod problem_type;
 
-pub use extensions::Extensions;
-pub use problem_details::ProblemDetails;
-pub use problem_type::ProblemType;
+pub use problem_details::*;
+pub use problem_type::*;
 
 // Serde related extensions for http
 #[cfg(feature = "serde")]

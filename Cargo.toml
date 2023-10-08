@@ -1,7 +1,16 @@
 [package]
 name = "problem_details"
 version = "0.1.0"
+authors = ["Markus Gasser <markus.gasser@mailbox.org>"]
 edition = "2021"
+description = "RFC 9457 / RFC 7807 problem details for HTTP APIs."
+repository = "https://github.com/frenetisch-applaudierend/problem-details-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["http", "problem-details", "rfc9457", "rfc7807"]
+categories = ["web-programming"]
+
+[badges]
+maintenance = { status = "experimental" }
 
 [dependencies]
 http = "0.2"

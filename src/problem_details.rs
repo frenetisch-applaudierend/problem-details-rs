@@ -1,6 +1,6 @@
 use http::{StatusCode, Uri};
 
-use crate::{Extensions, ProblemType};
+use crate::ProblemType;
 
 /// A RFC 9457 / RFC 7807 problem details object.
 ///
@@ -55,7 +55,7 @@ use crate::{Extensions, ProblemType};
 /// ```
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct ProblemDetails {
+pub struct ProblemDetails<Ext = ()> {
     /// An optional uri describing the problem type.
     ///
     /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-type]() for more information.
@@ -93,11 +93,17 @@ pub struct ProblemDetails {
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
     pub instance: Option<Uri>,
 
+    /// An object containing extensions to this problem details object.
+    ///
+    /// Note that the extensions will be flattened into the resulting problem details
+    /// representation.
+    ///
+    /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-extension-members]() for more information.
     #[cfg_attr(feature = "serde", serde(flatten))]
-    pub extensions: Extensions,
+    pub extensions: Ext,
 }
 
-impl ProblemDetails {
+impl ProblemDetails<()> {
     /// Creates a new empty problem details object.
     pub fn new() -> Self {
         Self {
@@ -106,7 +112,7 @@ impl ProblemDetails {
             title: None,
             detail: None,
             instance: None,
-            extensions: Extensions::new(),
+            extensions: Default::default(),
         }
     }
 
@@ -122,10 +128,12 @@ impl ProblemDetails {
             title: status.canonical_reason().map(ToOwned::to_owned),
             detail: None,
             instance: None,
-            extensions: Extensions::new(),
+            extensions: Default::default(),
         }
     }
+}
 
+impl<Ext> ProblemDetails<Ext> {
     /// Builder-style method that sets the `type` field of this problem details object.
     pub fn with_type(mut self, r#type: impl Into<ProblemType>) -> Self {
         self.r#type = Some(r#type.into());
@@ -155,6 +163,18 @@ impl ProblemDetails {
         self.instance = Some(instance.into());
         self
     }
+
+    /// Builder style method that sets the `extensions` field of this probelm details object.
+    pub fn with_extensions<NewExt>(self, extensions: NewExt) -> ProblemDetails<NewExt> {
+        ProblemDetails::<NewExt> {
+            r#type: self.r#type,
+            status: self.status,
+            title: self.title,
+            detail: self.detail,
+            instance: self.instance,
+            extensions,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -176,16 +196,27 @@ mod tests {
         assert_eq!(details.title, Some("Not Found".to_string()));
         assert_eq!(details.detail, None);
         assert_eq!(details.instance, None);
+        assert_eq!(details.extensions, ());
     }
 
     #[test]
     fn fully_configured() {
+        #[derive(Debug, PartialEq, Eq)]
+        struct Extensions {
+            foo: String,
+            bar: u32,
+        }
+
         let details = ProblemDetails::new()
             .with_type(Uri::from_static("test:type"))
             .with_status(StatusCode::INTERNAL_SERVER_ERROR)
             .with_title("Test Title")
             .with_detail("Test Detail")
-            .with_instance(Uri::from_static("test:instance"));
+            .with_instance(Uri::from_static("test:instance"))
+            .with_extensions(Extensions {
+                foo: "Foo".to_string(),
+                bar: 42,
+            });
 
         assert_eq!(
             details.r#type,
@@ -195,6 +226,13 @@ mod tests {
         assert_eq!(details.title, Some("Test Title".to_string()));
         assert_eq!(details.detail, Some("Test Detail".to_string()));
         assert_eq!(details.instance, Some(Uri::from_static("test:instance")));
+        assert_eq!(
+            details.extensions,
+            Extensions {
+                foo: "Foo".to_string(),
+                bar: 42
+            }
+        );
     }
 
     #[cfg(feature = "serde")]
@@ -212,12 +250,22 @@ mod tests {
     #[cfg(feature = "serde")]
     #[test]
     fn serialize_filled() {
+        #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+        struct Extensions {
+            foo: String,
+            bar: u32,
+        }
+
         let details = ProblemDetails::new()
             .with_type(Uri::from_static("test:type"))
             .with_status(StatusCode::INTERNAL_SERVER_ERROR)
             .with_title("Test Title")
             .with_detail("Test Detail")
-            .with_instance(Uri::from_static("test:instance"));
+            .with_instance(Uri::from_static("test:instance"))
+            .with_extensions(Extensions {
+                foo: "Foo".to_string(),
+                bar: 42,
+            });
 
         let serialized = serde_json::to_value(details).unwrap();
 
@@ -226,7 +274,9 @@ mod tests {
             "status": 500,
             "title": "Test Title",
             "detail": "Test Detail",
-            "instance": "test:instance"
+            "instance": "test:instance",
+            "foo": "Foo",
+            "bar": 42
         });
 
         assert_eq!(expected, serialized);
@@ -247,22 +297,34 @@ mod tests {
     #[cfg(feature = "serde")]
     #[test]
     fn deserialize_filled() {
+        #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+        struct Extensions {
+            foo: String,
+            bar: u32,
+        }
+
         let filled = json!({
             "type": "test:type",
             "status": 500,
             "title": "Test Title",
             "detail": "Test Detail",
-            "instance": "test:instance"
+            "instance": "test:instance",
+            "foo": "Foo",
+            "bar": 42
         });
 
-        let deserialized = serde_json::from_value(filled).unwrap();
+        let deserialized: ProblemDetails<Extensions> = serde_json::from_value(filled).unwrap();
 
         let expected = ProblemDetails::new()
             .with_type(Uri::from_static("test:type"))
             .with_status(StatusCode::INTERNAL_SERVER_ERROR)
             .with_title("Test Title")
             .with_detail("Test Detail")
-            .with_instance(Uri::from_static("test:instance"));
+            .with_instance(Uri::from_static("test:instance"))
+            .with_extensions(Extensions {
+                foo: "Foo".to_string(),
+                bar: 42,
+            });
 
         assert_eq!(expected, deserialized);
     }
