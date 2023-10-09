@@ -1,6 +1,6 @@
 [package]
 name = "problem_details"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Markus Gasser <markus.gasser@mailbox.org>"]
 edition = "2021"
 description = "RFC 9457 / RFC 7807 problem details for HTTP APIs."
