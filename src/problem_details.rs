@@ -177,6 +177,42 @@ impl<Ext> ProblemDetails<Ext> {
     }
 }
 
+impl<Ext> std::fmt::Display for ProblemDetails<Ext> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let default_type = ProblemType::default();
+        let r#type = self.r#type.as_ref().unwrap_or(&default_type);
+        write!(f, "[{type}")?;
+
+        if let Some(status) = self.status {
+            write!(f, " {}]", status.as_u16())?;
+        } else {
+            write!(f, "]")?;
+        }
+
+        let title = self
+            .title
+            .as_deref()
+            .or(self.status.as_ref().and_then(StatusCode::canonical_reason));
+
+        if let Some(title) = title {
+            write!(f, " {title}")?;
+        }
+
+        if let Some(detail) = self.detail.as_ref() {
+            if title.is_some() {
+                write!(f, ":")?;
+            }
+
+            write!(f, " {detail}")?;
+        }
+
+        // if let Some()
+        Ok(())
+    }
+}
+
+impl<Ext> std::error::Error for ProblemDetails<Ext> where Ext: std::fmt::Debug {}
+
 #[cfg(test)]
 mod tests {
     use http::{StatusCode, Uri};
@@ -233,6 +269,94 @@ mod tests {
                 bar: 42
             }
         );
+    }
+
+    #[test]
+    fn to_string() {
+        let empty = ProblemDetails::new();
+
+        let type_only = ProblemDetails::new().with_type(Uri::from_static("test:type"));
+        let status_only = ProblemDetails::new().with_status(StatusCode::NOT_FOUND);
+        let title_only = ProblemDetails::new().with_title("Test Title");
+        let detail_only = ProblemDetails::new().with_detail("Test Detail");
+
+        let type_status = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_status(StatusCode::NOT_FOUND);
+        let type_title = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_title("Test Title");
+        let type_detail = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_detail("Test Detail");
+        let status_title = ProblemDetails::new()
+            .with_status(StatusCode::NOT_FOUND)
+            .with_title("Test Title");
+        let status_detail = ProblemDetails::new()
+            .with_status(StatusCode::NOT_FOUND)
+            .with_detail("Test Detail");
+        let title_detail = ProblemDetails::new()
+            .with_title("Test Title")
+            .with_detail("Test Detail");
+
+        let type_status_title = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_status(StatusCode::NOT_FOUND)
+            .with_title("Test Title");
+        let type_status_detail = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_status(StatusCode::NOT_FOUND)
+            .with_detail("Test Detail");
+        let type_title_detail = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_title("Test Title")
+            .with_detail("Test Detail");
+        let status_title_detail = ProblemDetails::new()
+            .with_status(StatusCode::NOT_FOUND)
+            .with_title("Test Title")
+            .with_detail("Test Detail");
+
+        let full = ProblemDetails::new()
+            .with_type(Uri::from_static("test:type"))
+            .with_status(StatusCode::NOT_FOUND)
+            .with_title("Test Title")
+            .with_detail("Test Detail");
+
+        assert_eq!("[about:blank]", empty.to_string());
+
+        assert_eq!("[test:type]", type_only.to_string());
+        assert_eq!("[about:blank 404] Not Found", status_only.to_string());
+        assert_eq!("[about:blank] Test Title", title_only.to_string());
+        assert_eq!("[about:blank] Test Detail", detail_only.to_string());
+
+        assert_eq!("[test:type 404] Not Found", type_status.to_string());
+        assert_eq!("[test:type] Test Title", type_title.to_string());
+        assert_eq!("[test:type] Test Detail", type_detail.to_string());
+        assert_eq!("[about:blank 404] Test Title", status_title.to_string());
+        assert_eq!(
+            "[about:blank 404] Not Found: Test Detail",
+            status_detail.to_string()
+        );
+        assert_eq!(
+            "[about:blank] Test Title: Test Detail",
+            title_detail.to_string()
+        );
+
+        assert_eq!("[test:type 404] Test Title", type_status_title.to_string());
+        assert_eq!(
+            "[test:type 404] Not Found: Test Detail",
+            type_status_detail.to_string()
+        );
+        assert_eq!(
+            "[test:type] Test Title: Test Detail",
+            type_title_detail.to_string()
+        );
+        assert_eq!(
+            "[about:blank 404] Test Title: Test Detail",
+            status_title_detail.to_string()
+        );
+
+        assert_eq!("[test:type 404] Test Title: Test Detail", full.to_string());
     }
 
     #[cfg(feature = "serde")]

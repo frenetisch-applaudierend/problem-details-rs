@@ -10,7 +10,13 @@ pub struct ProblemType(#[cfg_attr(feature = "serde", serde(with = "crate::serde:
 
 impl std::default::Default for ProblemType {
     fn default() -> Self {
-        ProblemType(Uri::from_static("about:blank"))
+        Self(Uri::from_static("about:blank"))
+    }
+}
+
+impl std::fmt::Display for ProblemType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.0.fmt(f)
     }
 }
 
