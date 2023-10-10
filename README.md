@@ -7,18 +7,15 @@ RFC 9457 / RFC 7807 problem details for HTTP APIs.
 This crate can be used to represent a problem details
 object as defined in RFC 9457 (which obsoletes RFC 7807).
 
-The [`ProblemDetails`] struct includes the standard fields
-([`type`](ProblemDetails::type), [`status`](ProblemDetails::status),
-[`title`](ProblemDetails::title), [`detail`](ProblemDetails::detail),
-[`instance`](ProblemDetails::instance)),
+The `ProblemDetails` struct includes the standard fields
+(`type`, `status`, `title`, `detail`, `instance`),
 as well as type-safe custom extensions.
 
 ## Extensions
 
 To add extensions, you need to define a struct that holds the extension
-fields, and use this struct as the generic parameter for [`ProblemDetails<Ext>`].
-Using [`with_extensions`](ProblemDetails::with_extensions), the type is adjusted
-automatically for you.
+fields, and use this struct as the generic parameter for `ProblemDetails<Ext>`.
+Using `with_extensions`), the type is adjusted automatically for you.
 
 Extension fields are flattened into the problem details object when serialized.
 
@@ -40,7 +37,7 @@ let details = ProblemDetails::new()
 let typecheck: ProblemDetails<MyExt> = details;
 ```
 
-If you need dynamic extensions, you can use a [`HashMap`](std::collections::HashMap)
+If you need dynamic extensions, you can use a `HashMap`
 as extensions object.
 
 ```rust
@@ -104,11 +101,14 @@ assert_eq!(json, serde_json::json!({
 ## Features
 
 - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
+- **axum**: Enables axum IntoResponse types for the `ProblemDetails` struct (_implies `serde`_)
+- **xml**: Enables serde XML support for the `ProblemDetails` struct using
+           [`quick-xml`](https://crates.io/crates/quick-xml) (_implies `serde`_)
 
 ## Caveats
 
 This crate is not fully compliant with the RFC, because it fails to deserialize
-json values containing properties with incorrect types (required by
+JSON values containing properties with incorrect types (required by
 [Chapter 3.1 of the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-members-of-a-problem-detail)).
 
 License: MIT OR Apache-2.0
