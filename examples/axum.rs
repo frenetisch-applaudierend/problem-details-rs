@@ -15,6 +15,6 @@ async fn main() {
 }
 
 async fn handler() -> Result<&'static str, ProblemDetails> {
-    // always return a problem description
+    // always return an error with a problem description
     Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT).with_detail("short and stout"))
 }

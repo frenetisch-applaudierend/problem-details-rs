@@ -4,25 +4,25 @@ use http::Uri;
 ///
 /// This type is mostly a wrapper around `http::Uri`. It implements
 /// `std::default::Default` to return `about:blank` as the default problem type.
-/// 
+///
 /// # Creating a problem type
-/// 
+///
 /// You should rarely need to create a [`ProblemType`] manually. Instead, you can
 /// just create an [`Uri`](http::Uri) and pass that e.g. to [`ProblemDetails::with_type`](crate::ProblemDetails::with_type).
-/// 
+///
 /// In case you do need to create a [`ProblemType`] manually, you can use
 /// the [`From`](std::convert::From) trait to convert a given [`Uri`](http::Uri),
 /// or [`Default::default()`] to create a default URI.
-/// 
+///
 /// ```rust
 /// use http::Uri;
 /// use problem_details::ProblemType;
-/// 
+///
 /// // Create a problem type from a URI
 /// let uri = Uri::from_static("https://example.com/problem");
 /// let problem_type = ProblemType::from(uri);
 /// assert_eq!(problem_type.to_string(), "https://example.com/problem");
-/// 
+///
 /// // Create a default problem type
 /// let default_type = ProblemType::default();
 /// assert_eq!(default_type.to_string(), "about:blank");

@@ -100,11 +100,14 @@
 //! # Features
 //!
 //! - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
+//! - **axum**: Enables axum IntoResponse types for the `ProblemDetails` struct (_implies `serde`_)
+//! - **xml**: Enables serde XML support for the `ProblemDetails` struct using
+//!            [`quick-xml`](https://crates.io/crates/quick-xml) (_implies `serde`_)
 //!
 //! # Caveats
 //!
 //! This crate is not fully compliant with the RFC, because it fails to deserialize
-//! json values containing properties with incorrect types (required by
+//! JSON values containing properties with incorrect types (required by
 //! [Chapter 3.1 of the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-members-of-a-problem-detail)).
 
 mod problem_details;
