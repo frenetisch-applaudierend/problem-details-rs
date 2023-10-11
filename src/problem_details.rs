@@ -152,6 +152,7 @@ pub struct ProblemDetails<Ext = ()> {
 
 impl ProblemDetails<()> {
     /// Creates a new empty problem details object.
+    #[must_use]
     pub fn new() -> Self {
         Self {
             r#type: None,
@@ -168,6 +169,7 @@ impl ProblemDetails<()> {
     /// This will set the `status` field to the given status code,
     /// the `title` field to the canonical reason phrase of the status code,
     /// and the `type` field to none, which is equivalent to `about:blank`.
+    #[must_use]
     pub fn from_status_code(status: StatusCode) -> Self {
         Self {
             r#type: None,
@@ -182,36 +184,42 @@ impl ProblemDetails<()> {
 
 impl<Ext> ProblemDetails<Ext> {
     /// Builder-style method that sets the `type` field of this problem details object.
+    #[must_use]
     pub fn with_type(mut self, r#type: impl Into<ProblemType>) -> Self {
         self.r#type = Some(r#type.into());
         self
     }
 
     /// Builder-style method that sets the `status` field of this problem details object.
+    #[must_use]
     pub fn with_status(mut self, status: impl Into<StatusCode>) -> Self {
         self.status = Some(status.into());
         self
     }
 
     /// Builder-style method that sets the `title` field of this problem details object.
+    #[must_use]
     pub fn with_title(mut self, title: impl Into<String>) -> Self {
         self.title = Some(title.into());
         self
     }
 
     /// Builder-style method that sets the `detail` field of this problem details object.
+    #[must_use]
     pub fn with_detail(mut self, detail: impl Into<String>) -> Self {
         self.detail = Some(detail.into());
         self
     }
 
     /// Builder-style method that sets the `instance` field of this problem details object.
+    #[must_use]
     pub fn with_instance(mut self, instance: impl Into<Uri>) -> Self {
         self.instance = Some(instance.into());
         self
     }
 
     /// Builder style method that sets the `extensions` field of this probelm details object.
+    #[must_use]
     pub fn with_extensions<NewExt>(self, extensions: NewExt) -> ProblemDetails<NewExt> {
         ProblemDetails::<NewExt> {
             r#type: self.r#type,
