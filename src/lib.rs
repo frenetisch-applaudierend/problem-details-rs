@@ -103,7 +103,8 @@
 //! - **axum**: Enables axum `IntoResponse` types for the `ProblemDetails` struct (_implies `serde`_)
 //! - **poem**: Enables poem `IntoResponse` impl for the `ProblemDetails` struct (_implies `serde`_)
 //! - **xml**: Enables serde XML support for the `ProblemDetails` struct using
-//!            [`quick-xml`](https://crates.io/crates/quick-xml) (_implies `serde`_)
+//!            [`quick-xml`](https://crates.io/crates/quick-xml) when using the integration into
+//!            a web framework (_implies `serde`, only useful together with `axum` or `poem`_)
 //!
 //! # Caveats
 //!
