@@ -1,3 +1,3 @@
 [[language]]
 name = "rust"
-config = { cargo = { features = [ "asxum", "serde", "xml" ] } }
+config = { cargo = { features = [ "axum", "serde", "poem", "xml" ] } }

@@ -1,18 +1,19 @@
-//! Axum response types for [`ProblemDetails`].
+//! Poem response types for [`ProblemDetails`].
 //!
-//! Requires feature `axum`.
+//! Requires feature `poem`.
 //!
-//! With the `axum` feature enabled, [`ProblemDetails`] implements [`IntoResponse`] using
+//! With the `poem` feature enabled, [`ProblemDetails`] implements [`IntoResponse`] using
 //! [`JsonProblemDetails`]. You can also return [`JsonProblemDetails`] to be specific.
-//! If you want to return XML, you can use [`XmlProblemDetails`].
+//! If you want to return XML, you can use [`XmlProblemDetails`] (requires feature `xml`).
 //!
 //! # Example
 //!
 //! ```rust
-//! use axum::{routing::get, Router};
+//! use poem::{get, Route};
 //! use http::StatusCode;
 //! use problem_details::ProblemDetails;
 //!
+//! #[poem::handler]
 //! async fn handler() -> Result<&'static str, ProblemDetails> {
 //!     // always return a problem description
 //!     Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
@@ -20,28 +21,28 @@
 //! }
 //!
 //! fn main() {
-//!     let app = Router::new().route("/", get(handler));
-//!     # let _app: Router = app;
+//!     let app = Route::new().at("/", get(handler));
+//!     # let _app = app;
 //!     // build and run server...
 //! }
 //! ```
-use axum::{
-    response::{IntoResponse, Response},
-    Json,
-};
 use http::{header, StatusCode};
+use poem::{error::ResponseError, web::Json, IntoResponse, Response};
+
+#[cfg(feature = "xml")]
+use poem::web::Xml;
 
 use crate::ProblemDetails;
 
-/// Response type for axum that sends a [`ProblemDetails`] as JSON.
+/// Response type for poem that sends a [`ProblemDetails`] as JSON.
 ///
-/// Requires features `axum` and `serde`.
+/// Requires features `poem` and `serde`.
 ///
 /// # Example
 ///
 /// ```rust
 /// use http::StatusCode;
-/// use problem_details::{axum::JsonProblemDetails, ProblemDetails};
+/// use problem_details::{poem::JsonProblemDetails, ProblemDetails};
 ///
 /// async fn handler() -> JsonProblemDetails {
 ///     ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
@@ -60,24 +61,21 @@ impl From<ProblemDetails> for JsonProblemDetails {
 impl IntoResponse for JsonProblemDetails {
     fn into_response(self) -> Response {
         let status_code = self.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-        (
-            status_code,
-            [(header::CONTENT_TYPE, "application/problem+json")],
-            Json(self.0),
-        )
-            .into_response()
+        let content = Json(self.0).with_header(header::CONTENT_TYPE, "application/problem+json");
+
+        (status_code, content).into_response()
     }
 }
 
-/// Response type for axum that sends a [`ProblemDetails`] as XML.
+/// Response type for poem that sends a [`ProblemDetails`] as XML.
 ///
-/// Requires features `axum` and `xml`.
+/// Requires features `poem` and `xml`.
 ///
 /// # Example
 ///
 /// ```rust
 /// use http::StatusCode;
-/// use problem_details::{axum::XmlProblemDetails, ProblemDetails};
+/// use problem_details::{poem::XmlProblemDetails, ProblemDetails};
 ///
 /// async fn handler() -> XmlProblemDetails {
 ///     ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
@@ -99,17 +97,9 @@ impl From<ProblemDetails> for XmlProblemDetails {
 impl IntoResponse for XmlProblemDetails {
     fn into_response(self) -> Response {
         let status_code = self.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-        let xml = match quick_xml::se::to_string_with_root("problem", &self.0) {
-            Ok(xml) => format!(r#"<?xml version="1.0" encoding="UTF-8"?>{}"#, xml),
-            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
-        };
+        let content = Xml(self.0).with_header(header::CONTENT_TYPE, "application/problem+xml");
 
-        (
-            status_code,
-            [(header::CONTENT_TYPE, "application/problem+xml")],
-            xml,
-        )
-            .into_response()
+        (status_code, content).into_response()
     }
 }
 
@@ -117,5 +107,15 @@ impl IntoResponse for XmlProblemDetails {
 impl IntoResponse for ProblemDetails {
     fn into_response(self) -> Response {
         JsonProblemDetails(self).into_response()
+    }
+}
+
+impl ResponseError for ProblemDetails {
+    fn status(&self) -> StatusCode {
+        self.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
+    }
+
+    fn as_response(&self) -> poem::Response {
+        self.clone().into_response()
     }
 }

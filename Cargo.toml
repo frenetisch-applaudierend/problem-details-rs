@@ -17,12 +17,14 @@ http = "0.2"
 
 # Optional Dependencies
 axum = { version = "0.6", default-features = false, features = ["json", "headers"], optional = true }
-serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 http-serde = { version = "1.1", default-features = false, optional = true }
+poem = { version = "1.3", default-features = false, optional = true }
 quick-xml = { version = "0.30", default-features = false, features = ["serialize"], optional = true }
+serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 
 [dev-dependencies]
 axum = "0.6"
+poem = "1.3"
 serde_json = "1.0"
 tokio = { version = "1.33", features = ["macros", "rt-multi-thread"] }
 
@@ -30,8 +32,13 @@ tokio = { version = "1.33", features = ["macros", "rt-multi-thread"] }
 default = ["serde"]
 serde = ["dep:serde", "dep:http-serde"]
 axum = ["dep:axum", "serde"]
-xml = ["dep:quick-xml", "serde"]
+poem = ["dep:poem", "serde"]
+xml = ["dep:quick-xml", "serde", "poem?/xml"]
 
 [[example]]
 name = "axum"
 required-features = ["axum", "xml"]
+
+[[example]]
+name = "poem"
+required-features = ["poem", "xml"]

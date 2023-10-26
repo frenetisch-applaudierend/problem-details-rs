@@ -101,6 +101,7 @@
 //!
 //! - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
 //! - **axum**: Enables axum `IntoResponse` types for the `ProblemDetails` struct (_implies `serde`_)
+//! - **poem**: Enables poem `IntoResponse` impl for the `ProblemDetails` struct (_implies `serde`_)
 //! - **xml**: Enables serde XML support for the `ProblemDetails` struct using
 //!            [`quick-xml`](https://crates.io/crates/quick-xml) (_implies `serde`_)
 //!
@@ -122,6 +123,10 @@ pub use problem_type::*;
 // Axum Support
 #[cfg(feature = "axum")]
 pub mod axum;
+
+// Poem Support
+#[cfg(feature = "poem")]
+pub mod poem;
 
 // Serde related extensions for http
 #[cfg(feature = "serde")]
