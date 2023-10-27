@@ -2,6 +2,18 @@ use http::{StatusCode, Uri};
 
 use crate::ProblemType;
 
+#[cfg(feature = "json")]
+mod json;
+
+#[cfg(feature = "json")]
+pub use json::JsonProblemDetails;
+
+#[cfg(feature = "xml")]
+mod xml;
+
+#[cfg(feature = "xml")]
+pub use xml::XmlProblemDetails;
+
 #[cfg(test)]
 mod tests;
 

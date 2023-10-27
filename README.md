@@ -1,66 +1,15 @@
-![Maintenance](https://img.shields.io/badge/maintenance-experimental-blue.svg)
-
 # problem_details
+
+![Maintenance](https://img.shields.io/badge/maintenance-experimental-blue.svg)
 
 RFC 9457 / RFC 7807 problem details for HTTP APIs.
 
-This crate can be used to represent a problem details
-object as defined in RFC 9457 (which obsoletes RFC 7807).
+This crate provides the [`ProblemDetails`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html) struct which implements the [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html) / [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807.html) problem details specification.
 
-The [`ProblemDetails`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html)
-struct includes the standard fields
-([`type`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#structfield.type),
-[`status`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#structfield.status),
-[`title`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#structfield.title),
-[`detail`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#structfield.detail),
-[`instance`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#structfield.instance)),
-as well as type-safe custom extensions.
+It supports serializing and deserializing problem details using JSON, and provides integration
+with the [axum](https://crates.io/crates/axum) and [poem](https://crates.io/crates/poem) web frameworks.
 
-## Extensions
-
-To add extensions, you need to define a struct that holds the extension
-fields, and use this struct as the generic parameter for `ProblemDetails<Ext>`.
-Using [`with_extensions`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#method.with_extensions),
-the type is adjusted automatically for you.
-
-Extension fields are flattened into the problem details object when serialized.
-
-```rust
-use problem_details::ProblemDetails;
-
-struct MyExt {
-    foo: String,
-    bar: u32,
-}
-
-let details = ProblemDetails::new()
-    .with_extensions(MyExt {
-        foo: "Hello".to_string(),
-        bar: 42,
-    });
-
-// details is of type ProblemDetails<MyExt>
-let typecheck: ProblemDetails<MyExt> = details;
-```
-
-If you need dynamic extensions, you can use a `HashMap` as extensions object.
-
-```rust
-use std::collections::HashMap;
-use problem_details::ProblemDetails;
-
-let mut extensions = HashMap::<String, serde_json::Value>::new();
-extensions.insert("foo".to_string(), serde_json::json!("Hello"));
-extensions.insert("bar".to_string(), serde_json::json!(42));
-
-let details = ProblemDetails::new()
-   .with_extensions(extensions);
-
-// details is of type ProblemDetails<HashMap<String, serde_json::Value>>
-let typecheck: ProblemDetails<HashMap<String, serde_json::Value>> = details;
-```
-
-## Example
+## Usage
 
 The following example shows how to create a problem details object that produces
 the [example JSON from the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-the-problem-details-json-ob).
@@ -103,6 +52,48 @@ assert_eq!(json, serde_json::json!({
 }));
 ```
 
+## Extensions
+
+[Extensions](https://www.rfc-editor.org/rfc/rfc9457.html#name-extension-members) can be added
+to the problem details object using the [`with_extensions`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#method.with_extensions) method. The extensions are passed
+using a struct defining the extension fields.
+
+During serialization, the extension fields are flattened into the problem details object.
+
+```rust
+use problem_details::ProblemDetails;
+
+#[derive(serde::Serialize, serde::Deserialize)]
+struct MyExt {
+    foo: String,
+    bar: u32,
+}
+
+let details = ProblemDetails::new()
+    .with_title("Extensions test")
+    .with_extensions(MyExt {
+        foo: "Hello".to_string(),
+        bar: 42,
+    });
+
+let json = serde_json::to_value(&details).unwrap();
+
+assert_eq!(json, serde_json::json!({
+  "title": "Extensions test",
+  "foo": "Hello",
+  "bar": 42
+}));
+```
+
+To deserialize with extensions, provide the extensions type as the generic
+parameter to the [`ProblemDetails`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html) struct.
+
+```rust
+let details: ProblemDetails<MyExt> = serde_json::from_str(json).unwrap();
+```
+
+If you need dynamic extensions, you can use a `HashMap` as extensions object.
+
 ## Features
 
 - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
@@ -118,4 +109,11 @@ This crate is not fully compliant with the RFC, because it fails to deserialize
 JSON values containing properties with incorrect types (required by
 [Chapter 3.1 of the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-members-of-a-problem-detail)).
 
-License: MIT OR Apache-2.0
+## License
+
+Licensed under either of
+
+- [Apache License, Version 2.0](https://opensource.org/license/apache-2-0/)
+- [The MIT License](https://opensource.org/license/mit/)
+
+at your option.

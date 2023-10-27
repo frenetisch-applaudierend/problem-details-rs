@@ -33,88 +33,48 @@ use http::{header, StatusCode};
 
 use crate::ProblemDetails;
 
-/// Response type for axum that sends a [`ProblemDetails`] as JSON.
-///
-/// Requires features `axum` and `serde`.
-///
-/// # Example
-///
-/// ```rust
-/// use http::StatusCode;
-/// use problem_details::{axum::JsonProblemDetails, ProblemDetails};
-///
-/// async fn handler() -> JsonProblemDetails {
-///     ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
-///         .with_detail("short and stout")
-///         .into()
-/// }
-/// ```
-pub struct JsonProblemDetails(ProblemDetails);
+#[cfg(feature = "json")]
+use crate::JsonProblemDetails;
 
-impl From<ProblemDetails> for JsonProblemDetails {
-    fn from(value: ProblemDetails) -> Self {
-        Self(value)
-    }
-}
+#[cfg(feature = "xml")]
+use crate::XmlProblemDetails;
 
-impl IntoResponse for JsonProblemDetails {
+#[cfg(feature = "json")]
+impl<Ext> IntoResponse for JsonProblemDetails<Ext>
+where
+    Ext: serde::Serialize,
+{
     fn into_response(self) -> Response {
         let status_code = self.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-        (
-            status_code,
-            [(header::CONTENT_TYPE, "application/problem+json")],
-            Json(self.0),
-        )
-            .into_response()
-    }
-}
+        let content_type = [(header::CONTENT_TYPE, Self::CONTENT_TYPE)];
+        let content = Json(self.0);
 
-/// Response type for axum that sends a [`ProblemDetails`] as XML.
-///
-/// Requires features `axum` and `xml`.
-///
-/// # Example
-///
-/// ```rust
-/// use http::StatusCode;
-/// use problem_details::{axum::XmlProblemDetails, ProblemDetails};
-///
-/// async fn handler() -> XmlProblemDetails {
-///     ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
-///         .with_detail("short and stout")
-///         .into()
-/// }
-/// ```
-#[cfg(feature = "xml")]
-pub struct XmlProblemDetails(ProblemDetails);
-
-#[cfg(feature = "xml")]
-impl From<ProblemDetails> for XmlProblemDetails {
-    fn from(value: ProblemDetails) -> Self {
-        Self(value)
+        (status_code, content_type, content).into_response()
     }
 }
 
 #[cfg(feature = "xml")]
-impl IntoResponse for XmlProblemDetails {
+impl<Ext> IntoResponse for XmlProblemDetails<Ext>
+where
+    Ext: serde::Serialize,
+{
     fn into_response(self) -> Response {
         let status_code = self.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
-        let xml = match quick_xml::se::to_string_with_root("problem", &self.0) {
-            Ok(xml) => format!(r#"<?xml version="1.0" encoding="UTF-8"?>{}"#, xml),
+        let content_type = [(header::CONTENT_TYPE, Self::CONTENT_TYPE)];
+        let content = match self.to_body_string() {
+            Ok(xml) => xml,
             Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
         };
 
-        (
-            status_code,
-            [(header::CONTENT_TYPE, "application/problem+xml")],
-            xml,
-        )
-            .into_response()
+        (status_code, content_type, content).into_response()
     }
 }
 
-// default is JSON
-impl IntoResponse for ProblemDetails {
+#[cfg(feature = "json")]
+impl<Ext> IntoResponse for ProblemDetails<Ext>
+where
+    Ext: serde::Serialize,
+{
     fn into_response(self) -> Response {
         JsonProblemDetails(self).into_response()
     }
