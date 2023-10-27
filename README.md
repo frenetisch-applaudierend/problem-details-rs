@@ -97,11 +97,14 @@ If you need dynamic extensions, you can use a `HashMap` as extensions object.
 ## Features
 
 - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
-- **axum**: Enables axum `IntoResponse` types for the `ProblemDetails` struct (_implies `serde`_)
-- **poem**: Enables poem `IntoResponse` impl for the `ProblemDetails` struct (_implies `serde`_)
-- **xml**: Enables serde XML support for the `ProblemDetails` struct using
-           [`quick-xml`](https://crates.io/crates/quick-xml) when using the integration into
-           a web framework (_implies `serde`, only useful together with `axum` or `poem`_)
+- **json**:  Enables serialization to JSON when using web framework integrations
+             (_enabled by default, implies `serde`)
+- **xml**:   Enables serialization to XML when using web framework integrations
+             (_implies `serde`_)
+- **axum**:  Enables integration with the [`axum`](https://crates.io/crates/axum)
+             web framework, enabling to return `ProblemDetails` as responses.
+- **poem**:  Enables integration with the [`poem`](https://crates.io/crates/poem)
+             web framework, enabling to return `ProblemDetails` as responses and errors.
 
 ## Caveats
 
