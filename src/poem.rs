@@ -24,6 +24,8 @@
 //!     // build and run server...
 //! }
 //! ```
+use std::any::TypeId;
+
 use http::StatusCode;
 use poem::{error::ResponseError, web::Json, IntoResponse, Response};
 
@@ -113,5 +115,53 @@ where
 {
     fn into_response(self) -> Response {
         JsonProblemDetails(self).into_response()
+    }
+}
+
+#[cfg(feature = "poem-openapi")]
+impl<Ext> poem_openapi::ApiResponse for ProblemDetails<Ext>
+where
+    Ext: poem_openapi::ApiResponse + Send + 'static,
+{
+    fn meta() -> poem_openapi::registry::MetaResponses {
+        use poem_openapi::registry::{MetaMediaType, MetaResponse, MetaResponses, MetaSchemaRef};
+
+        MetaResponses {
+            responses: vec![MetaResponse {
+                description: "An RFC 9457 / RFC 7807 problem details object",
+                status: None,
+                content: vec![MetaMediaType {
+                    content_type: "application/problem+json",
+                    schema: MetaSchemaRef::Reference(Self::schema_name()),
+                }],
+                headers: vec![],
+            }],
+        }
+    }
+
+    fn register(registry: &mut poem_openapi::registry::Registry) {
+        use poem_openapi::registry::MetaSchema;
+        use poem_openapi::types::Type;
+
+        // TODO: Find out how to register schema correctly here
+        registry.create_schema::<Self, _>(Self::schema_name(), |_| {
+            let mut schema = MetaSchema::new("object");
+            schema.properties = vec![("title", String::schema_ref())];
+            schema
+        });
+    }
+}
+
+#[cfg(feature = "poem-openapi")]
+impl<Ext> ProblemDetails<Ext>
+where
+    Ext: poem_openapi::ApiResponse + Send + 'static,
+{
+    fn schema_name() -> String {
+        if TypeId::of::<Self>() == TypeId::of::<ProblemDetails>() {
+            "ProblemDetails".to_string()
+        } else {
+            todo!("Create registry of TypeIds")
+        }
     }
 }
