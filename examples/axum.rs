@@ -1,6 +1,7 @@
 use axum::{routing::get, Router};
 use http::StatusCode;
 use problem_details::{JsonProblemDetails, ProblemDetails, XmlProblemDetails};
+use tokio::net::TcpListener;
 
 #[tokio::main]
 async fn main() {
@@ -11,10 +12,8 @@ async fn main() {
         .route("/xml", get(xml));
 
     // run it with hyper on localhost:3000
-    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
-        .serve(app.into_make_service())
-        .await
-        .unwrap();
+    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }
 
 async fn default() -> Result<&'static str, ProblemDetails> {

@@ -4,10 +4,12 @@
 
 RFC 9457 / RFC 7807 problem details for HTTP APIs.
 
-This crate provides the [`ProblemDetails`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html) struct which implements the [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html) / [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807.html) problem details specification.
+This crate provides the [`ProblemDetails`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html)
+struct which implements the [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html) / [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807.html)
+problem details specification.
 
 It supports serializing and deserializing problem details using JSON, and provides integration
-with the [axum](https://crates.io/crates/axum) and [poem](https://crates.io/crates/poem) web frameworks.
+with the [axum (0.7)](https://crates.io/crates/axum) and [poem (2.0)](https://crates.io/crates/poem) web frameworks.
 
 ## Usage
 
@@ -55,8 +57,8 @@ assert_eq!(json, serde_json::json!({
 ## Extensions
 
 [Extensions](https://www.rfc-editor.org/rfc/rfc9457.html#name-extension-members) can be added
-to the problem details object using the [`with_extensions`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#method.with_extensions) method. The extensions are passed
-using a struct defining the extension fields.
+to the problem details object using the [`with_extensions`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html#method.with_extensions)
+method. The extensions are passed using a struct defining the extension fields.
 
 During serialization, the extension fields are flattened into the problem details object.
 
@@ -108,7 +110,7 @@ If you need dynamic extensions, you can use a `HashMap` as extensions object.
 
 ## Caveats
 
-This crate is not fully compliant with the RFC, because it fails to deserialize
+This crate is not fully compliant with RFC 9457, because it fails to deserialize
 JSON values containing properties with incorrect types (required by
 [Chapter 3.1 of the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-members-of-a-problem-detail)).
 
