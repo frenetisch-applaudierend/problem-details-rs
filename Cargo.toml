@@ -16,21 +16,21 @@ all-features = true
 maintenance = { status = "experimental" }
 
 [dependencies]
-http = "0.2"
+http = "1.0"
 
 # Optional Dependencies
-axum = { version = "0.6", default-features = false, features = ["json", "headers"], optional = true }
-http-serde = { version = "1.1", default-features = false, optional = true }
-poem = { version = "1.3", default-features = false, optional = true }
-quick-xml = { version = "0.30", default-features = false, features = ["serialize"], optional = true }
+axum = { version = "0.7", default-features = false, features = ["json"], optional = true }
+http-serde = { version = "2.0", default-features = false, optional = true }
+poem = { version = "2.0", default-features = false, optional = true }
+quick-xml = { version = "0.31", default-features = false, features = ["serialize"], optional = true }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, features = ["std"], optional = true }
 
 [dev-dependencies]
-axum = "0.6"
-poem = "1.3"
+axum = "0.7"
+poem = "2.0"
 serde_json = "1.0"
-tokio = { version = "1.33", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.35", features = ["macros", "rt-multi-thread"] }
 
 [features]
 default = ["serde", "json"]
