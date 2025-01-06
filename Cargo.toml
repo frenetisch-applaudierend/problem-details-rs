@@ -1,6 +1,6 @@
 [package]
 name = "problem_details"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Markus Gasser <markus.gasser@mailbox.org>"]
 edition = "2021"
 description = "RFC 9457 / RFC 7807 problem details for HTTP APIs."
@@ -16,21 +16,21 @@ all-features = true
 maintenance = { status = "experimental" }
 
 [dependencies]
-http = "1.0"
+http = "1.2"
 
 # Optional Dependencies
-axum = { version = "0.7", default-features = false, features = ["json"], optional = true }
-http-serde = { version = "2.0", default-features = false, optional = true }
+axum = { version = "0.8", default-features = false, features = ["json"], optional = true }
+http-serde = { version = "2.1", default-features = false, optional = true }
 poem = { version = "2.0", default-features = false, optional = true }
-quick-xml = { version = "0.31", default-features = false, features = ["serialize"], optional = true }
+quick-xml = { version = "0.37", default-features = false, features = ["serialize"], optional = true }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, features = ["std"], optional = true }
 
 [dev-dependencies]
-axum = "0.7"
+axum = "0.8"
 poem = "2.0"
 serde_json = "1.0"
-tokio = { version = "1.35", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.42", features = ["macros", "rt-multi-thread"] }
 
 [features]
 default = ["serde", "json"]
