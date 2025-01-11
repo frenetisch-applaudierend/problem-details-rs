@@ -58,7 +58,7 @@ impl<Ext> std::error::Error for XmlProblemDetails<Ext> where Ext: std::fmt::Debu
 
 #[derive(Clone, Debug)]
 pub enum XmlError {
-    Serialization(quick_xml::DeError),
+    Serialization(quick_xml::SeError),
 }
 
 impl std::fmt::Display for XmlError {
