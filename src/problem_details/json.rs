@@ -29,7 +29,7 @@ where
 {
     /// Write this problem details to an JSON string suitable for a response body.
     pub fn to_body_string(&self) -> Result<String, JsonError> {
-        serde_json::to_string(&self.0).map_err(|e| JsonError::Serialization(e))
+        serde_json::to_string(&self.0).map_err(JsonError::Serialization)
     }
 }
 

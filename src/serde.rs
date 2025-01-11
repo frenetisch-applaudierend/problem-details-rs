@@ -9,7 +9,7 @@ pub(crate) mod uri {
 
     struct UriVisitor;
 
-    impl<'de> serde::de::Visitor<'de> for UriVisitor {
+    impl serde::de::Visitor<'_> for UriVisitor {
         type Value = Option<Uri>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -71,7 +71,7 @@ pub(crate) mod status {
 
     struct StatusVisitor;
 
-    impl<'de> Visitor<'de> for StatusVisitor {
+    impl Visitor<'_> for StatusVisitor {
         type Value = Option<StatusCode>;
 
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {

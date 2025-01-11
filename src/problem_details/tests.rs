@@ -4,6 +4,7 @@ use serde_json::json;
 use crate::{ProblemDetails, ProblemType};
 
 #[test]
+#[allow(clippy::unit_cmp)]
 fn from_status() {
     let details = ProblemDetails::from_status_code(StatusCode::NOT_FOUND);
 
