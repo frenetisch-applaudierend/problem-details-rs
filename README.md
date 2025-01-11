@@ -9,12 +9,12 @@ struct which implements the [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.ht
 problem details specification.
 
 It supports serializing and deserializing problem details using JSON, and provides integration
-with the [axum (0.7)](https://crates.io/crates/axum) and [poem (2.0)](https://crates.io/crates/poem) web frameworks.
+with the [axum (0.8)](https://crates.io/crates/axum) and [poem (3.1)](https://crates.io/crates/poem) web frameworks.
 
 ## Usage
 
 The following example shows how to create a problem details object that produces
-the [example JSON from the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-the-problem-details-json-ob).
+the [example JSON from the RFC](https://www.rfc-editor.org/rfc/rfc9457.html#name-the-problem-details-json-ob).
 
 ```rust
 use http::Uri;
@@ -112,7 +112,7 @@ If you need dynamic extensions, you can use a `HashMap` as extensions object.
 
 This crate is not fully compliant with RFC 9457, because it fails to deserialize
 JSON values containing properties with incorrect types (required by
-[Chapter 3.1 of the RFC](https://www.rfc-editor.org/rfc/rfc9457.pdf#name-members-of-a-problem-detail)).
+[Chapter 3.1 of the RFC](https://www.rfc-editor.org/rfc/rfc9457.html#name-members-of-a-problem-detail)).
 
 ## License
 
