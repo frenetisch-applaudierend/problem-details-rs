@@ -106,6 +106,8 @@
 //!              return `ProblemDetails` as responses.
 //! - **poem**:  Enables integration with the [`poem`](https://crates.io/crates/poem) web framework, allowing to
 //!              return `ProblemDetails` as responses and errors.
+//! - **actix**:  Enables integration with the [`actix-web`](https://crates.io/crates/actix-web) web framework, allowing to
+//!              return `ProblemDetails` as responses.
 //!
 //! # Caveats
 //!
@@ -130,6 +132,12 @@ pub mod axum;
 #[cfg(feature = "poem")]
 pub mod poem;
 
+// Actix support
+#[cfg(feature = "actix")]
+mod actix;
+
 // Serde related extensions for http
 #[cfg(feature = "serde")]
 mod serde;
+
+
