@@ -25,10 +25,12 @@ poem = { version = "3.1", default-features = false, optional = true }
 quick-xml = { version = "0.37", default-features = false, features = ["serialize"], optional = true }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, features = ["std"], optional = true }
+actix-web = { version = "4.9", default-features = false, optional = true }
 
 [dev-dependencies]
 axum = "0.8"
 poem = "3.1"
+actix-web = "4.9"
 serde_json = "1.0"
 tokio = { version = "1.35", features = ["macros", "rt-multi-thread"] }
 
@@ -39,6 +41,7 @@ json = ["serde", "dep:serde_json"]
 xml = ["serde", "dep:quick-xml"]
 axum = ["dep:axum"]
 poem = ["dep:poem"]
+actix = ["dep:actix-web"]
 
 [[example]]
 name = "axum"
@@ -47,3 +50,7 @@ required-features = ["axum", "json", "xml"]
 [[example]]
 name = "poem"
 required-features = ["poem", "json", "xml"]
+
+[[example]]
+name = "actix"
+required-features = ["actix", "json", "xml"]
