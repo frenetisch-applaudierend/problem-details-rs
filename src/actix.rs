@@ -29,10 +29,10 @@
 //! ```
 use actix_web::{
     web::Json,
-    {HttpResponse, ResponseError}
+    {HttpResponse, ResponseError},
 };
-use std::fmt::Debug;
 use http::StatusCode;
+use std::fmt::Debug;
 
 use crate::ProblemDetails;
 
@@ -47,8 +47,19 @@ impl<Ext> ResponseError for ProblemDetails<Ext>
 where
     Ext: serde::Serialize + Clone + Send + Debug,
 {
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        // Due to http crate version mismatches we need to translate the status code
+        let status_code = self
+            .status
+            .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
+            .as_u16();
+        actix_web::http::StatusCode::from_u16(status_code)
+            .expect("Status code should be translatable")
+    }
     fn error_response(&self) -> HttpResponse {
-        self.clone().into()
+        HttpResponse::build(self.status_code())
+            .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
+            .json(Json(self))
     }
 }
 
@@ -58,7 +69,9 @@ where
     Ext: serde::Serialize + Clone + Send + Debug,
 {
     fn error_response(&self) -> HttpResponse {
-        self.clone().into()
+        HttpResponse::build(self.0.status_code())
+            .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
+            .json(Json(self.0.clone()))
     }
 }
 
@@ -68,52 +81,13 @@ where
     Ext: serde::Serialize + Clone + Send + Debug,
 {
     fn error_response(&self) -> HttpResponse {
-        self.clone().into()
-    }
-}
-
-#[cfg(feature = "json")]
-impl<Ext> From<ProblemDetails<Ext>> for HttpResponse
-where
-    Ext: serde::Serialize + Clone + Send,
-
-{
-    fn from(value: ProblemDetails<Ext>) -> Self {
-        JsonProblemDetails(value).into()
-    }
-}
-
-#[cfg(feature = "json")]
-impl<Ext> From<JsonProblemDetails<Ext>> for HttpResponse
-where
-    Ext: serde::Serialize + Clone + Send,
-
-{
-    fn from(value: JsonProblemDetails<Ext>) -> Self {
-        let status_code = value.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
-            .as_u16();
-        HttpResponse::build(actix_web::http::StatusCode::from_u16(status_code).unwrap())
-            .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
-            .json(Json(value.0))
-    }
-}
-
-#[cfg(feature = "xml")]
-impl<Ext> From<XmlProblemDetails<Ext>> for HttpResponse
-where
-    Ext: serde::Serialize + Clone + Send,
-{
-    fn from(value: XmlProblemDetails<Ext>) -> Self {
-        let status_code = value.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
-            .as_u16();
-        let content = match value.to_body_string() {
+        let content = match self.to_body_string() {
             Ok(xml) => xml,
             Err(_) => return HttpResponse::InternalServerError().into(),
         };
 
-        HttpResponse::build(actix_web::http::StatusCode::from_u16(status_code).unwrap())
+        HttpResponse::build(self.0.status_code())
             .content_type(XmlProblemDetails::<Ext>::CONTENT_TYPE)
             .body(content)
     }
 }
-

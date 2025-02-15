@@ -1,4 +1,4 @@
-use actix_web::{App, web, HttpServer};
+use actix_web::{web, App, HttpServer};
 use http::StatusCode;
 use problem_details::{JsonProblemDetails, ProblemDetails, XmlProblemDetails};
 
@@ -10,9 +10,9 @@ async fn main() -> std::io::Result<()> {
             .route("/json", web::get().to(json))
             .route("/xml", web::get().to(xml))
     })
-        .bind(("0.0.0.0", 3000))?
-        .run()
-        .await
+    .bind(("0.0.0.0", 3000))?
+    .run()
+    .await
 }
 
 async fn default() -> Result<&'static str, ProblemDetails> {

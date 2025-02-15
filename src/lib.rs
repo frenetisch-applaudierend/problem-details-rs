@@ -139,5 +139,3 @@ mod actix;
 // Serde related extensions for http
 #[cfg(feature = "serde")]
 mod serde;
-
-
