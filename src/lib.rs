@@ -107,7 +107,7 @@
 //! - **poem**:  Enables integration with the [`poem`](https://crates.io/crates/poem) web framework, allowing to
 //!              return `ProblemDetails` as responses and errors.
 //! - **actix**:  Enables integration with the [`actix-web`](https://crates.io/crates/actix-web) web framework, allowing to
-//!              return `ProblemDetails` as responses.
+//!              return `ProblemDetails` as errors.
 //!
 //! # Caveats
 //!

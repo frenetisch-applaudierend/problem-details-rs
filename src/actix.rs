@@ -56,6 +56,7 @@ where
         actix_web::http::StatusCode::from_u16(status_code)
             .expect("Status code should be translatable")
     }
+
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code())
             .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
@@ -71,7 +72,7 @@ where
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.0.status_code())
             .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
-            .json(Json(self.0.clone()))
+            .json(Json(&self.0))
     }
 }
 
