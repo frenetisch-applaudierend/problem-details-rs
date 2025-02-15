@@ -24,6 +24,7 @@
 //!         App::new()
 //!             .route("/", web::get().to(handler))
 //!     // build and run server...
+//!     });
 //! }
 //! ```
 use actix_web::{
