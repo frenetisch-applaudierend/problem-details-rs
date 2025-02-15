@@ -1,7 +1,5 @@
 # problem_details
 
-![Maintenance](https://img.shields.io/badge/maintenance-experimental-blue.svg)
-
 RFC 9457 / RFC 7807 problem details for HTTP APIs.
 
 This crate provides the [`ProblemDetails`](https://docs.rs/problem_details/latest/problem_details/struct.ProblemDetails.html)
@@ -100,7 +98,7 @@ If you need dynamic extensions, you can use a `HashMap` as extensions object.
 
 - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
 - **json**:  Enables serialization to JSON when using web framework integrations
-             (_enabled by default, implies `serde`)
+             (_enabled by default, implies `serde`_)
 - **xml**:   Enables serialization to XML when using web framework integrations
              (_implies `serde`_)
 - **axum**:  Enables integration with the [`axum`](https://crates.io/crates/axum)
