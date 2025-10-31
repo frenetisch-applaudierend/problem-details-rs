@@ -107,6 +107,8 @@ If you need dynamic extensions, you can use a `HashMap` as extensions object.
              web framework, enabling to return `ProblemDetails` as responses and errors.
 - **actix**: Enables integration with the [`actix-web`](https://crates.io/crates/actix-web) web framework, allowing to
              return `ProblemDetails` as errors.
+- **utoipa**: Enables integration with the [`utoipa`](https://crates.io/crates/utoipa) OpenAPI schema generator, allowing to
+             use `ProblemDetails` as response type.
 
 ## Caveats
 
