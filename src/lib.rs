@@ -100,7 +100,7 @@
 //! # Features
 //!
 //! - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
-//! - **json**: Enables serialization to JSON when using web framework integrations (_enabled by default, implies `serde`)
+//! - **json**: Enables serialization to JSON when using web framework integrations (_enabled by default, implies `serde`_)
 //! - **xml**: Enables serialization to XML when using web framework integrations (_implies `serde`_)
 //! - **axum**: Enables integration with the [`axum`](https://crates.io/crates/axum) web framework, allowing to
 //!   return `ProblemDetails` as responses.
