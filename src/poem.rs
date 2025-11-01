@@ -25,7 +25,7 @@
 //! }
 //! ```
 use http::StatusCode;
-use poem::{error::ResponseError, web::Json, IntoResponse, Response};
+use poem::{IntoResponse, Response, error::ResponseError, web::Json};
 
 use crate::ProblemDetails;
 

@@ -1,4 +1,4 @@
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use http::StatusCode;
 use problem_details::{JsonProblemDetails, ProblemDetails, XmlProblemDetails};
 use tokio::net::TcpListener;

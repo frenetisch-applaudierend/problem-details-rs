@@ -26,10 +26,10 @@
 //! }
 //! ```
 use axum::{
-    response::{IntoResponse, Response},
     Json,
+    response::{IntoResponse, Response},
 };
-use http::{header, StatusCode};
+use http::{StatusCode, header};
 
 use crate::ProblemDetails;
 

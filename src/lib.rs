@@ -100,14 +100,16 @@
 //! # Features
 //!
 //! - **serde**: Enables serde support for the `ProblemDetails` struct (_enabled by default_)
-//! - **json**:  Enables serialization to JSON when using web framework integrations (_enabled by default, implies `serde`)
-//! - **xml**:   Enables serialization to XML when using web framework integrations (_implies `serde`_)
-//! - **axum**:  Enables integration with the [`axum`](https://crates.io/crates/axum) web framework, allowing to
-//!              return `ProblemDetails` as responses.
-//! - **poem**:  Enables integration with the [`poem`](https://crates.io/crates/poem) web framework, allowing to
-//!              return `ProblemDetails` as responses and errors.
-//! - **actix**:  Enables integration with the [`actix-web`](https://crates.io/crates/actix-web) web framework, allowing to
-//!              return `ProblemDetails` as errors.
+//! - **json**: Enables serialization to JSON when using web framework integrations (_enabled by default, implies `serde`)
+//! - **xml**: Enables serialization to XML when using web framework integrations (_implies `serde`_)
+//! - **axum**: Enables integration with the [`axum`](https://crates.io/crates/axum) web framework, allowing to
+//!   return `ProblemDetails` as responses.
+//! - **poem**: Enables integration with the [`poem`](https://crates.io/crates/poem) web framework, allowing to
+//!   return `ProblemDetails` as responses and errors.
+//! - **actix**: Enables integration with the [`actix-web`](https://crates.io/crates/actix-web) web framework, allowing to
+//!   return `ProblemDetails` as errors.
+//! - **utoipa**: Enables integration with the [`utoipa`](https://crates.io/crates/utoipa) OpenAPI schema generator,
+//!   allowing to use `ProblemDetails` as response type.
 //!
 //! # Caveats
 //!

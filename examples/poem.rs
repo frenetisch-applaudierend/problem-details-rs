@@ -1,5 +1,5 @@
 use http::StatusCode;
-use poem::{get, handler, listener::TcpListener, Route, Server};
+use poem::{Route, Server, get, handler, listener::TcpListener};
 use problem_details::{JsonProblemDetails, ProblemDetails, XmlProblemDetails};
 
 #[tokio::main]

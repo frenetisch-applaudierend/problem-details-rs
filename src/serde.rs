@@ -3,8 +3,8 @@ pub(crate) mod uri {
 
     use http::Uri;
     use serde::{
-        de::{self, Unexpected},
         Serializer,
+        de::{self, Unexpected},
     };
 
     struct UriVisitor;
@@ -50,7 +50,7 @@ pub(crate) mod uri {
             serializer: S,
         ) -> Result<S::Ok, S::Error> {
             match value {
-                Some(ref value) => super::serialize(value, serializer),
+                Some(value) => super::serialize(value, serializer),
                 None => serializer.serialize_none(),
             }
         }
@@ -127,7 +127,7 @@ pub(crate) mod status {
             serializer: S,
         ) -> Result<S::Ok, S::Error> {
             match value {
-                Some(ref value) => super::serialize(value, serializer),
+                Some(value) => super::serialize(value, serializer),
                 None => serializer.serialize_none(),
             }
         }
