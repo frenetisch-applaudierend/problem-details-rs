@@ -114,12 +114,18 @@ mod tests;
 /// ```
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+#[cfg_attr(
+    feature = "utoipa",
+    schema(description = "RFC 9457 / RFC 7807 problem details")
+)]
 pub struct ProblemDetails<Ext = ()> {
     /// An optional uri describing the problem type.
     ///
     /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-type]() for more information.
     #[cfg_attr(feature = "serde", serde(default))]
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
+    #[cfg_attr(feature = "utoipa", schema(value_type = String, format = Uri))]
     pub r#type: Option<ProblemType>,
 
     /// An optional status code for this problem.
@@ -128,6 +134,7 @@ pub struct ProblemDetails<Ext = ()> {
     #[cfg_attr(feature = "serde", serde(default))]
     #[cfg_attr(feature = "serde", serde(with = "crate::serde::status::opt"))]
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
+    #[cfg_attr(feature = "utoipa", schema(value_type = u16))]
     pub status: Option<StatusCode>,
 
     /// An optional human-readable title for this problem.
@@ -150,6 +157,7 @@ pub struct ProblemDetails<Ext = ()> {
     #[cfg_attr(feature = "serde", serde(default))]
     #[cfg_attr(feature = "serde", serde(with = "crate::serde::uri::opt"))]
     #[cfg_attr(feature = "serde", serde(skip_serializing_if = "Option::is_none"))]
+    #[cfg_attr(feature = "utoipa", schema(value_type = String, format = Uri))]
     pub instance: Option<Uri>,
 
     /// An object containing extensions to this problem details object.
@@ -159,6 +167,7 @@ pub struct ProblemDetails<Ext = ()> {
     ///
     /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-extension-members]() for more information.
     #[cfg_attr(feature = "serde", serde(flatten))]
+    #[cfg_attr(feature = "utoipa", schema(inline))]
     pub extensions: Ext,
 }
 
