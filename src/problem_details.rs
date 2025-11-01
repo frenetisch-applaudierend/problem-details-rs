@@ -167,7 +167,7 @@ pub struct ProblemDetails<Ext = ()> {
     ///
     /// See [https://www.rfc-editor.org/rfc/rfc9457.html#name-extension-members]() for more information.
     #[cfg_attr(feature = "serde", serde(flatten))]
-    #[schema(inline)]
+    #[cfg_attr(feature = "utoipa", schema(inline))]
     pub extensions: Ext,
 }
 
