@@ -7,7 +7,8 @@ struct which implements the [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.ht
 problem details specification.
 
 It supports serializing and deserializing problem details using JSON, and provides integration
-with the [axum (0.8)](https://crates.io/crates/axum) and [poem (3.1)](https://crates.io/crates/poem) web frameworks.
+with the [actix-web (4.11)](https://crates.io/crates/actix-web), [axum (0.8)](https://crates.io/crates/axum)
+and [poem (3.1)](https://crates.io/crates/poem) web frameworks.
 
 ## Usage
 
