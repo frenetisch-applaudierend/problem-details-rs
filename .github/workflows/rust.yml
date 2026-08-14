@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - name: Build
       run: cargo build --verbose --all-features
     - name: Run tests
@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     # RUSTFLAGS only covers rustc lints, so deny clippy's own lints explicitly.
     - name: Clippy
       run: cargo clippy --all-features --all-targets -- -D warnings
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - uses: taiki-e/install-action@cargo-hack
     - name: Build each feature in isolation
       run: cargo hack --each-feature --no-dev-deps build --verbose
