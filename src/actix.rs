@@ -35,9 +35,6 @@ use http::StatusCode;
 use std::fmt::Debug;
 
 #[cfg(feature = "json")]
-use actix_web::web::Json;
-
-#[cfg(feature = "json")]
 use crate::{JsonProblemDetails, ProblemDetails};
 
 #[cfg(feature = "xml")]
@@ -55,7 +52,7 @@ where
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code())
             .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
-            .json(Json(self))
+            .json(self)
     }
 }
 
@@ -71,7 +68,7 @@ where
     fn error_response(&self) -> HttpResponse {
         HttpResponse::build(self.status_code())
             .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
-            .json(Json(&self.0))
+            .json(&self.0)
     }
 }
 

@@ -31,7 +31,7 @@ where
     pub fn to_body_string(&self) -> Result<String, XmlError> {
         let xml = quick_xml::se::to_string_with_root("problem", &self.0)
             .map_err(XmlError::Serialization)?;
-        let xml = format!(r#"<?xml version="1.0" encoding="UTF-8"?>{}"#, xml);
+        let xml = format!(r#"<?xml version="1.0" encoding="UTF-8"?>{xml}"#);
 
         Ok(xml)
     }
