@@ -27,17 +27,18 @@
 //!     });
 //! }
 //! ```
-use actix_web::{
-    web::Json,
-    {HttpResponse, ResponseError},
-};
+#[cfg(any(feature = "json", feature = "xml"))]
+use actix_web::{HttpResponse, ResponseError};
+#[cfg(any(feature = "json", feature = "xml"))]
 use http::StatusCode;
+#[cfg(any(feature = "json", feature = "xml"))]
 use std::fmt::Debug;
 
-use crate::ProblemDetails;
+#[cfg(feature = "json")]
+use actix_web::web::Json;
 
 #[cfg(feature = "json")]
-use crate::JsonProblemDetails;
+use crate::{JsonProblemDetails, ProblemDetails};
 
 #[cfg(feature = "xml")]
 use crate::XmlProblemDetails;
@@ -96,6 +97,7 @@ where
 }
 
 /// Due to http crate version mismatches we need to translate the status code.
+#[cfg(any(feature = "json", feature = "xml"))]
 fn actix_status_code(status: Option<StatusCode>) -> actix_web::http::StatusCode {
     let status_code = status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR).as_u16();
     actix_web::http::StatusCode::from_u16(status_code).expect("Status code should be translatable")

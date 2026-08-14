@@ -25,16 +25,16 @@
 //!     // build and run server...
 //! }
 //! ```
-use axum::{
-    Json,
-    response::{IntoResponse, Response},
-};
+#[cfg(any(feature = "json", feature = "xml"))]
+use axum::response::{IntoResponse, Response};
+#[cfg(any(feature = "json", feature = "xml"))]
 use http::{StatusCode, header};
 
-use crate::ProblemDetails;
+#[cfg(feature = "json")]
+use axum::Json;
 
 #[cfg(feature = "json")]
-use crate::JsonProblemDetails;
+use crate::{JsonProblemDetails, ProblemDetails};
 
 #[cfg(feature = "xml")]
 use crate::XmlProblemDetails;

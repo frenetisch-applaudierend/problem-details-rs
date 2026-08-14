@@ -24,13 +24,16 @@
 //!     // build and run server...
 //! }
 //! ```
+#[cfg(any(feature = "json", feature = "xml"))]
 use http::StatusCode;
-use poem::{IntoResponse, Response, error::ResponseError, web::Json};
-
-use crate::ProblemDetails;
+#[cfg(any(feature = "json", feature = "xml"))]
+use poem::{IntoResponse, Response, error::ResponseError};
 
 #[cfg(feature = "json")]
-use crate::JsonProblemDetails;
+use poem::web::Json;
+
+#[cfg(feature = "json")]
+use crate::{JsonProblemDetails, ProblemDetails};
 
 #[cfg(feature = "xml")]
 use crate::XmlProblemDetails;
