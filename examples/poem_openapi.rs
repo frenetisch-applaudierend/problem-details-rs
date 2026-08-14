@@ -1,6 +1,6 @@
 use http::StatusCode;
-use poem::{listener::TcpListener, Route, Server};
-use poem_openapi::{param::Query, payload::PlainText, OpenApi, OpenApiService};
+use poem::{Route, Server, listener::TcpListener};
+use poem_openapi::{OpenApi, OpenApiService, param::Query, payload::PlainText};
 use problem_details::ProblemDetails;
 
 struct Api;

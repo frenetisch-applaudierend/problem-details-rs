@@ -106,6 +106,8 @@
 //!   return `ProblemDetails` as responses.
 //! - **poem**: Enables integration with the [`poem`](https://crates.io/crates/poem) web framework, allowing to
 //!   return `ProblemDetails` as responses and errors.
+//! - **poem-openapi**: Enables integration with [`poem-openapi`](https://crates.io/crates/poem-openapi),
+//!   allowing to use `ProblemDetails` as a response type in `#[OpenApi]` handlers (_implies `poem` and `json`_).
 //! - **actix**: Enables integration with the [`actix-web`](https://crates.io/crates/actix-web) web framework, allowing to
 //!   return `ProblemDetails` as errors.
 //! - **utoipa**: Enables integration with the [`utoipa`](https://crates.io/crates/utoipa) OpenAPI schema generator,

@@ -42,7 +42,7 @@ json = ["serde", "dep:serde_json"]
 xml = ["serde", "dep:quick-xml"]
 axum = ["dep:axum"]
 poem = ["dep:poem"]
-poem-openapi = ["dep:poem", "dep:poem-openapi"]
+poem-openapi = ["poem", "dep:poem-openapi", "json"]
 actix = ["dep:actix-web"]
 utoipa = ["dep:utoipa"]
 
@@ -64,4 +64,4 @@ required-features = ["axum", "json", "xml", "utoipa"]
 
 [[example]]
 name = "poem_openapi"
-required-features = ["poem", "poem-openapi", "json", "xml"]
+required-features = ["poem-openapi", "xml"]
