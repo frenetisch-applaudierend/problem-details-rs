@@ -19,7 +19,7 @@ http = "1.0"
 axum = { version = "0.8", default-features = false, features = ["json"], optional = true }
 http-serde = { version = "2.1", default-features = false, optional = true }
 poem = { version = "3.1", default-features = false, optional = true }
-quick-xml = { version = "0.38", default-features = false, features = ["serialize"], optional = true }
+quick-xml = { version = "0.41", default-features = false, features = ["serialize"], optional = true }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, features = ["std"], optional = true }
 actix-web = { version = "4.11", default-features = false, optional = true }
