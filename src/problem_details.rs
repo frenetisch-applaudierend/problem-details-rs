@@ -6,13 +6,13 @@ use crate::ProblemType;
 mod json;
 
 #[cfg(feature = "json")]
-pub use json::JsonProblemDetails;
+pub use json::{JsonError, JsonProblemDetails};
 
 #[cfg(feature = "xml")]
 mod xml;
 
 #[cfg(feature = "xml")]
-pub use xml::XmlProblemDetails;
+pub use xml::{XmlError, XmlProblemDetails};
 
 #[cfg(test)]
 mod tests;

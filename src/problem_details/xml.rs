@@ -56,8 +56,12 @@ impl<Ext> std::fmt::Display for XmlProblemDetails<Ext> {
 
 impl<Ext> std::error::Error for XmlProblemDetails<Ext> where Ext: std::fmt::Debug {}
 
+/// An error that occurred while writing a
+/// [`XmlProblemDetails`] to a response body.
 #[derive(Clone, Debug)]
+#[non_exhaustive]
 pub enum XmlError {
+    /// The problem details could not be serialized to XML.
     Serialization(quick_xml::SeError),
 }
 

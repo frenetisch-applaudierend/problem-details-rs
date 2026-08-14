@@ -52,8 +52,12 @@ impl<Ext> std::fmt::Display for JsonProblemDetails<Ext> {
 
 impl<Ext> std::error::Error for JsonProblemDetails<Ext> where Ext: std::fmt::Debug {}
 
+/// An error that occurred while writing a
+/// [`JsonProblemDetails`] to a response body.
 #[derive(Debug)]
+#[non_exhaustive]
 pub enum JsonError {
+    /// The problem details could not be serialized to JSON.
     Serialization(serde_json::Error),
 }
 
