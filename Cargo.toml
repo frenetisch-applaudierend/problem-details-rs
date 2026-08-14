@@ -18,7 +18,10 @@ http = "1.0"
 # Optional Dependencies
 axum = { version = "0.8", default-features = false, features = ["json"], optional = true }
 http-serde = { version = "2.1", default-features = false, optional = true }
-poem = { version = "3.1", default-features = false, optional = true }
+# We only need poem's core types, but poem 3.1 does not build without `server`:
+# `poem::addr` unconditionally references `tokio::net::unix::SocketAddr`, and
+# `tokio/net` is only enabled via `server`. Drop this once poem gates that properly.
+poem = { version = "3.1", default-features = false, features = ["server"], optional = true }
 quick-xml = { version = "0.41", default-features = false, features = ["serialize"], optional = true }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, features = ["std"], optional = true }
