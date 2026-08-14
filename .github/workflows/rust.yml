@@ -8,6 +8,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
 
 jobs:
   build:
@@ -20,6 +21,17 @@ jobs:
       run: cargo build --verbose --all-features
     - name: Run tests
       run: cargo test --verbose --all-features
+
+  clippy:
+    name: Clippy
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    # RUSTFLAGS only covers rustc lints, so deny clippy's own lints explicitly.
+    - name: Clippy
+      run: cargo clippy --all-features --all-targets -- -D warnings
 
   feature-matrix:
     name: Feature matrix

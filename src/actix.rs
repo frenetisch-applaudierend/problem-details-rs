@@ -102,4 +102,3 @@ fn actix_status_code(status: Option<StatusCode>) -> actix_web::http::StatusCode 
     let status_code = status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR).as_u16();
     actix_web::http::StatusCode::from_u16(status_code).expect("Status code should be translatable")
 }
-
