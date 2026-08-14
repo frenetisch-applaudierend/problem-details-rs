@@ -6,7 +6,7 @@ This crate provides the [`ProblemDetails`](https://docs.rs/problem_details/lates
 struct which implements the [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457.html) / [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807.html)
 problem details specification.
 
-It supports serializing and deserializing problem details using JSON, and provides integration
+It supports serializing and deserializing problem details using JSON and XML, and provides integration
 with the [actix-web (4.11)](https://crates.io/crates/actix-web), [axum (0.8)](https://crates.io/crates/axum)
 and [poem (3.1)](https://crates.io/crates/poem) web frameworks.
 
@@ -110,6 +110,9 @@ If you need dynamic extensions, you can use a `HashMap` as extensions object.
              return `ProblemDetails` as errors.
 - **utoipa**: Enables integration with the [`utoipa`](https://crates.io/crates/utoipa) OpenAPI schema generator, allowing to
              use `ProblemDetails` as response type.
+
+> [!NOTE]
+> The **axum**, **poem** and **actix** integrations must be paired with either **json** or **xml** to do anything useful.
 
 ## Caveats
 

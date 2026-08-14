@@ -48,13 +48,7 @@ where
     Ext: serde::Serialize + Clone + Send + Debug,
 {
     fn status_code(&self) -> actix_web::http::StatusCode {
-        // Due to http crate version mismatches we need to translate the status code
-        let status_code = self
-            .status
-            .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR)
-            .as_u16();
-        actix_web::http::StatusCode::from_u16(status_code)
-            .expect("Status code should be translatable")
+        actix_status_code(self.status)
     }
 
     fn error_response(&self) -> HttpResponse {
@@ -69,8 +63,12 @@ impl<Ext> ResponseError for JsonProblemDetails<Ext>
 where
     Ext: serde::Serialize + Clone + Send + Debug,
 {
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        actix_status_code(self.0.status)
+    }
+
     fn error_response(&self) -> HttpResponse {
-        HttpResponse::build(self.0.status_code())
+        HttpResponse::build(self.status_code())
             .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
             .json(Json(&self.0))
     }
@@ -81,14 +79,25 @@ impl<Ext> ResponseError for XmlProblemDetails<Ext>
 where
     Ext: serde::Serialize + Clone + Send + Debug,
 {
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        actix_status_code(self.0.status)
+    }
+
     fn error_response(&self) -> HttpResponse {
         let content = match self.to_body_string() {
             Ok(xml) => xml,
             Err(_) => return HttpResponse::InternalServerError().into(),
         };
 
-        HttpResponse::build(self.0.status_code())
+        HttpResponse::build(self.status_code())
             .content_type(XmlProblemDetails::<Ext>::CONTENT_TYPE)
             .body(content)
     }
 }
+
+/// Due to http crate version mismatches we need to translate the status code.
+fn actix_status_code(status: Option<StatusCode>) -> actix_web::http::StatusCode {
+    let status_code = status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR).as_u16();
+    actix_web::http::StatusCode::from_u16(status_code).expect("Status code should be translatable")
+}
+

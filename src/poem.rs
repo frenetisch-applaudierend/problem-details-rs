@@ -35,6 +35,7 @@ use crate::JsonProblemDetails;
 #[cfg(feature = "xml")]
 use crate::XmlProblemDetails;
 
+#[cfg(feature = "json")]
 impl<Ext> ResponseError for ProblemDetails<Ext>
 where
     Ext: serde::Serialize + Clone + Send,

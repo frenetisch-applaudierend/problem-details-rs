@@ -15,8 +15,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Build
       run: cargo build --verbose --all-features
     - name: Run tests
       run: cargo test --verbose --all-features
+
+  feature-matrix:
+    name: Feature matrix
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: taiki-e/install-action@cargo-hack
+    - name: Build each feature in isolation
+      run: cargo hack --each-feature --no-dev-deps build --verbose
+    - name: Build each integration against every format
+      run: |
+        for integration in axum poem actix; do
+          for format in json xml json,xml; do
+            cargo hack --no-dev-deps build --verbose \
+              --no-default-features --features "$integration,$format"
+          done
+        done
