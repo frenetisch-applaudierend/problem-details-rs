@@ -102,7 +102,10 @@ where
         let status_code = self.0.status.unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
         let content = match self.to_body_string() {
             Ok(xml) => xml,
-            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+            Err(_err) => {
+                debug_assert!(false, "{_err}");
+                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+            }
         };
         let content = content.with_content_type(Self::CONTENT_TYPE);
 

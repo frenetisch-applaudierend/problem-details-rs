@@ -63,7 +63,10 @@ where
         let content_type = [(header::CONTENT_TYPE, Self::CONTENT_TYPE)];
         let content = match self.to_body_string() {
             Ok(xml) => xml,
-            Err(_) => return StatusCode::INTERNAL_SERVER_ERROR.into_response(),
+            Err(_err) => {
+                debug_assert!(false, "{_err}");
+                return StatusCode::INTERNAL_SERVER_ERROR.into_response();
+            }
         };
 
         (status_code, content_type, content).into_response()
