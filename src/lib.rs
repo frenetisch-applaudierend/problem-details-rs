@@ -136,7 +136,7 @@ pub mod poem;
 
 // Actix support
 #[cfg(feature = "actix")]
-mod actix;
+pub mod actix;
 
 // Serde related extensions for http
 #[cfg(feature = "serde")]
