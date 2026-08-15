@@ -43,7 +43,7 @@ use crate::XmlProblemDetails;
 #[cfg(feature = "json")]
 impl<Ext> ResponseError for ProblemDetails<Ext>
 where
-    Ext: serde::Serialize + Clone + Send + Debug,
+    Ext: serde::Serialize + Debug,
 {
     fn status_code(&self) -> actix_web::http::StatusCode {
         actix_status_code(self.status)
@@ -59,7 +59,7 @@ where
 #[cfg(feature = "json")]
 impl<Ext> ResponseError for JsonProblemDetails<Ext>
 where
-    Ext: serde::Serialize + Clone + Send + Debug,
+    Ext: serde::Serialize + Debug,
 {
     fn status_code(&self) -> actix_web::http::StatusCode {
         actix_status_code(self.0.status)
@@ -75,7 +75,7 @@ where
 #[cfg(feature = "xml")]
 impl<Ext> ResponseError for XmlProblemDetails<Ext>
 where
-    Ext: serde::Serialize + Clone + Send + Debug,
+    Ext: serde::Serialize + Debug,
 {
     fn status_code(&self) -> actix_web::http::StatusCode {
         actix_status_code(self.0.status)
