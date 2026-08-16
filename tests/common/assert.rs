@@ -8,21 +8,13 @@
 use problem_details::ProblemDetails;
 
 /// The namespace RFC 9457 Appendix B mandates on the root element.
-#[cfg(feature = "xml")]
-pub const RFC_NAMESPACE: &str = "urn:ietf:rfc:7807";
-
-/// The namespace the crate currently emits.
 ///
 /// Expected bodies are written the way the RFC prescribes, with
-/// `xmlns="urn:ietf:rfc:7807"` on `<problem>`. Until finding #4 is fixed the
-/// crate emits no namespace at all, so [`assert_xml_body`] strips namespaces
-/// from the expected side rather than have every XML test fail for the same
-/// single reason.
-///
-/// When #4 is fixed: set this to `Some(RFC_NAMESPACE)`, drop the stripping in
-/// [`assert_xml_body`], and un-ignore `root_declares_rfc_namespace`.
+/// `xmlns="urn:ietf:rfc:7807"` on `<problem>`, and [`assert_xml_body`] compares
+/// namespaces, so every case asserts it — `root_declares_rfc_namespace` only
+/// states it in isolation.
 #[cfg(feature = "xml")]
-pub const EXPECTED_NAMESPACE: Option<&str> = None;
+pub const RFC_NAMESPACE: &str = "urn:ietf:rfc:7807";
 
 /// Assert that `details` serializes to JSON equal to `expected`.
 ///
@@ -185,12 +177,8 @@ where
     // Checked on every case, not just the one that violates it.
     check_xml_members_unique(&actual, &body);
 
-    let mut expected_events =
+    let expected_events =
         xml_canon::canonicalize(expected).unwrap_or_else(|err| panic!("expected body: {err}"));
-
-    if EXPECTED_NAMESPACE.is_none() {
-        xml_canon::strip_namespaces(&mut expected_events);
-    }
 
     if actual == expected_events {
         return;

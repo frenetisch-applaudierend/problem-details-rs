@@ -71,25 +71,6 @@ pub fn canonicalize(xml: &str) -> Result<Vec<Event>, String> {
     Ok(events)
 }
 
-/// Remove all namespaces from a canonical event sequence.
-///
-/// Used to downgrade the expected side while [`crate::common::assert::EXPECTED_NAMESPACE`]
-/// is `None` — see the note there.
-pub fn strip_namespaces(events: &mut [Event]) {
-    for event in events {
-        match event {
-            Event::Start { name, attrs } => {
-                name.ns = None;
-                for (attr, _) in attrs {
-                    attr.ns = None;
-                }
-            }
-            Event::End { name } => name.ns = None,
-            Event::Text(_) => {}
-        }
-    }
-}
-
 /// Assert that `xml` starts with an XML declaration of version 1.0 and,
 /// if an encoding is given, UTF-8.
 ///

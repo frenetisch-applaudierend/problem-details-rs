@@ -4,6 +4,8 @@ All notable changes to `problem_details` are documented here. Breaking changes a
 
 ## [Unreleased]
 
+- XML bodies now declare the namespace RFC 9457 Appendix B mandates (`urn:ietf:rfc:7807`).
+
 ## [0.10.0] - 2026-08-16
 
 - The MSRV is now declared in `Cargo.toml` as `rust-version = "1.85"`.

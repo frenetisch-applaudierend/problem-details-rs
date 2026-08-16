@@ -100,12 +100,11 @@ fn extensions_only() {
     );
 }
 
-/// Finding #4: RFC 9457 Appendix B mandates the namespace on the root element.
+/// RFC 9457 Appendix B mandates the namespace on the root element.
 ///
-/// The other cases in this file compare namespace-insensitively while this is
-/// outstanding — see `common::assert::EXPECTED_NAMESPACE`.
+/// Every other case in this file asserts it too, since the comparison resolves
+/// namespaces; this one states it on its own so a regression names itself.
 #[test]
-#[ignore = "finding #4: XML output omits the required namespace"]
 fn root_declares_rfc_namespace() {
     use common::xml_canon::{Event, canonicalize};
 
