@@ -24,6 +24,10 @@
 //! two steps: [`ValueSerializer`] turns any [`Serialize`] into the [`Value`]
 //! tree below, which is where "this member is a sequence" becomes known, and
 //! [`Value::write_document`] renders that tree.
+//!
+//! The other thing that tree decides is what to do with a value that is absent.
+//! XML has no null, and Appendix B does not give one, so a `None` member is
+//! omitted rather than written as an empty element — see [`Value::Null`].
 
 use std::fmt::Display;
 
@@ -53,7 +57,17 @@ enum Value {
 
     /// The absence of a value.
     ///
-    /// XML has no null, so this is written as an empty element.
+    /// XML has no null, and Appendix B does not invent one, so a `Null` member
+    /// of an object is left out of the document entirely — see
+    /// [`written_members`]. Writing it as an empty element would not be a
+    /// neutral choice: `<absent/>` is a positive claim that the value is the
+    /// empty string, and reads back as `Some("")` rather than `None`. Omission
+    /// is how RFC 9457 expresses "no value" everywhere else; each of its own
+    /// members is optional and left out when unset.
+    ///
+    /// An item of an array is the exception, since there is no element to omit
+    /// and dropping it would change the length of the array. It keeps its
+    /// `<i/>`, which is the least-bad of two imperfect options.
     Null,
 
     /// An array, written as one `<i>` element per item.
@@ -112,7 +126,7 @@ impl Value {
                 }
             }
             Value::Map(members) => {
-                for (name, value) in members {
+                for (name, value) in written_members(members) {
                     value.write_element(name, out);
                 }
             }
@@ -126,9 +140,20 @@ impl Value {
             Value::Text(text) => text.is_empty(),
             Value::Null => true,
             Value::Seq(items) => items.is_empty(),
-            Value::Map(members) => members.is_empty(),
+            // Not `members.is_empty()`: an object whose members are all absent
+            // writes no children either.
+            Value::Map(members) => written_members(members).next().is_none(),
         }
     }
+}
+
+/// The members of an object that make it into the document, which is all of
+/// them except the absent ones. See [`Value::Null`] for why those are dropped.
+fn written_members(members: &[(String, Value)]) -> impl Iterator<Item = (&str, &Value)> {
+    members
+        .iter()
+        .filter(|(_, value)| !matches!(value, Value::Null))
+        .map(|(name, value)| (name.as_str(), value))
 }
 
 fn write_end_tag(name: &str, out: &mut String) {
