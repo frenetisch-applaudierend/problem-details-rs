@@ -1,8 +1,9 @@
 [package]
 name = "problem_details"
 version = "0.9.0"
-authors = ["Markus Gasser <markus.gasser@mailbox.org>"]
+authors = ["Markus Gasser <markus.gasser@jakku.ch>"]
 edition = "2024"
+rust-version = "1.85"
 description = "RFC 9457 / RFC 7807 problem details for HTTP APIs."
 repository = "https://github.com/frenetisch-applaudierend/problem-details-rs"
 license = "MIT OR Apache-2.0"

@@ -4,6 +4,7 @@ All notable changes to `problem_details` are documented here. Breaking changes a
 
 ## [0.10.0] - Unreleased
 
+- The MSRV is now declared in `Cargo.toml` as `rust-version = "1.85"`.
 - Updated `quick-xml` to 0.41.
 - Relaxed trait bounds on the framework response impls: extensions (`Ext`) now only need `Serialize + Debug` instead of `Serialize + Clone + Send + Debug`.
 - Fixed the build with just `--features poem` (the `poem` dependency now enables the `server` feature).
