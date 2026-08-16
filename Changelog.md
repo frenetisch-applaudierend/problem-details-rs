@@ -5,6 +5,7 @@ All notable changes to `problem_details` are documented here. Breaking changes a
 ## [Unreleased]
 
 - XML bodies now declare the namespace RFC 9457 Appendix B mandates (`urn:ietf:rfc:7807`).
+- Arrays in XML bodies now use the representation RFC 9457 Appendix B defines — a container element holding one `<i>` element per item, e.g. `<accounts><i>/account/12345</i><i>/account/67890</i></accounts>`. Previously each item was written as a repeated sibling element (`<accounts>…</accounts><accounts>…</accounts>`), which Appendix B reads as an object with a duplicate member name rather than as an array. This changes the XML output for any extension holding a sequence.
 
 ## [0.10.0] - 2026-08-16
 

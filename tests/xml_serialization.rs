@@ -39,7 +39,6 @@ fn all_members() {
 
 /// RFC 9457 Appendix B, verbatim.
 #[test]
-#[ignore = "finding #5: sequences are written as repeated siblings, not <i> items"]
 fn rfc_out_of_credit() {
     assert_xml_body(
         cases::rfc_out_of_credit(),
@@ -265,7 +264,6 @@ fn ext_flat() {
 }
 
 #[test]
-#[ignore = "finding #5: sequences are written as repeated siblings, not <i> items"]
 fn ext_vec() {
     assert_xml_body(
         cases::ext_vec(),
