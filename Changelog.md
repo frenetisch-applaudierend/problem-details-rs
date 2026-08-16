@@ -2,7 +2,7 @@
 
 All notable changes to `problem_details` are documented here. Breaking changes are marked with ⚠️.
 
-## [0.10.0] - Unreleased
+## [Unreleased]
 
 - The MSRV is now declared in `Cargo.toml` as `rust-version = "1.85"`.
 - Updated `quick-xml` to 0.41.

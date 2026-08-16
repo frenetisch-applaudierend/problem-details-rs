@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+  # Lets the release workflow re-run these exact checks on the tagged commit,
+  # instead of duplicating them there.
+  workflow_call:
 
 env:
   CARGO_TERM_COLOR: always
@@ -51,3 +54,37 @@ jobs:
               --no-default-features --features "$integration,$format"
           done
         done
+
+  msrv:
+    name: MSRV (1.85)
+
+    runs-on: ubuntu-latest
+
+    # The MSRV job answers "does this compile on 1.85", not "is it lint clean".
+    # An older rustc has a different lint set, so denying warnings here would
+    # fail on lints the stable jobs never see. Those jobs still deny warnings.
+    env:
+      RUSTFLAGS: ''
+
+    steps:
+    - uses: actions/checkout@v7
+    - uses: dtolnay/rust-toolchain@1.85
+    - uses: taiki-e/install-action@cargo-hack
+    # Dev-dependencies (tokio, utoipa-axum, the actix-web dev-dep) require a
+    # newer rustc than the library itself, so the MSRV only covers --no-dev-deps.
+    - name: Build each feature in isolation
+      run: cargo hack --each-feature --no-dev-deps build --verbose
+    - name: Build all features together
+      run: cargo build --verbose --all-features
+
+  package:
+    name: Package
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+    - name: List packaged files
+      run: cargo package --all-features --list
+    - name: Dry-run publish
+      run: cargo publish --dry-run --verbose --all-features

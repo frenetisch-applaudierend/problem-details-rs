@@ -1,0 +1,69 @@
+name: Release
+
+# Publishing runs from a pushed `v*` tag, created by `cargo release --execute`.
+
+on:
+  push:
+    tags: [ "v*" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    uses: ./.github/workflows/rust.yml
+
+  publish:
+    name: Publish
+    needs: verify
+
+    runs-on: ubuntu-latest
+
+    environment: release
+
+    permissions:
+      id-token: write   # required to mint the Trusted Publishing token
+      contents: write   # required to create the GitHub release
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Check tag matches Cargo.toml version
+      run: |
+        tag_version="${GITHUB_REF_NAME#v}"
+        manifest_version="$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')"
+        if [ "$tag_version" != "$manifest_version" ]; then
+          echo "Tag $GITHUB_REF_NAME implies version $tag_version, but Cargo.toml says $manifest_version" >&2
+          exit 1
+        fi
+
+    - name: Authenticate with crates.io
+      id: auth
+      uses: rust-lang/crates-io-auth-action@v1
+
+    - name: Publish
+      run: cargo publish --verbose --all-features
+      env:
+        CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+
+    - name: Extract changelog section
+      run: |
+        tag_version="${GITHUB_REF_NAME#v}"
+        awk -v ver="$tag_version" '
+          $0 ~ "^## \\[" ver "\\]" { found = 1; next }
+          found && /^## \[/ { exit }
+          found { print }
+        ' Changelog.md > release-notes.md
+        if [ ! -s release-notes.md ]; then
+          echo "No changelog section found for $tag_version" >&2
+          exit 1
+        fi
+
+    - name: Create GitHub release
+      run: gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file release-notes.md
+      env:
+        GH_TOKEN: ${{ github.token }}

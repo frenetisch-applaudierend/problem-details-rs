@@ -1,0 +1,19 @@
+# Configuration for cargo-release (https://github.com/crate-ci/cargo-release).
+#
+# `cargo release <level> --execute` bumps the version, dates the changelog,
+# commits, tags and pushes. Publishing itself happens in CI: the pushed tag
+# triggers .github/workflows/release.yml, which uploads to crates.io using
+# Trusted Publishing. Hence `publish = false` here.
+
+allow-branch = ["main"]
+publish = false
+tag-name = "v{{version}}"
+tag-message = "v{{version}}"
+pre-release-commit-message = "Bump version to {{version}}"
+
+# Turn the `## [Unreleased]` heading into a dated, versioned one. The search is
+# a regex matching only the heading prefix, so a trailing breaking-change marker
+# (`## [Unreleased] ⚠️`) is preserved.
+pre-release-replacements = [
+  { file = "Changelog.md", search = "## \\[Unreleased\\]", replace = "## [{{version}}] - {{date}}", exactly = 1 },
+]
