@@ -36,6 +36,10 @@ utoipa = { version = "5.4", default-features = false, features = ["macros", "url
 axum = "0.8"
 poem = "3.1"
 actix-web = "4.11"
+# Used by the serialization tests to canonicalize XML before comparing it.
+# Declared explicitly so the tests do not rely on the optional dependency of
+# the same name being activated.
+quick-xml = "0.41"
 serde_json = "1.0"
 tokio = { version = "1.48", features = ["macros", "rt-multi-thread"] }
 utoipa-axum = "0.2"
