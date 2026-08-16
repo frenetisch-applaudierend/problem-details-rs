@@ -21,6 +21,9 @@ pub struct XmlProblemDetails<Ext = ()>(pub(crate) ProblemDetails<Ext>);
 impl<Ext> XmlProblemDetails<Ext> {
     /// The HTTP content type for a xml problem details.
     pub const CONTENT_TYPE: &'static str = "application/problem+xml";
+
+    /// The XML namespace of a problem details document.
+    pub const NAMESPACE: &'static str = "urn:ietf:rfc:7807";
 }
 
 impl<Ext> XmlProblemDetails<Ext>
@@ -29,12 +32,31 @@ where
 {
     /// Write this problem details to an XML string suitable for a response body.
     pub fn to_body_string(&self) -> Result<String, XmlError> {
-        let xml = quick_xml::se::to_string_with_root("problem", &self.0)
-            .map_err(XmlError::serialization)?;
+        let root = WithNamespace {
+            xmlns: Self::NAMESPACE,
+            problem: &self.0,
+        };
+
+        let xml =
+            quick_xml::se::to_string_with_root("problem", &root).map_err(XmlError::serialization)?;
         let xml = format!(r#"<?xml version="1.0" encoding="UTF-8"?>{xml}"#);
 
         Ok(xml)
     }
+}
+
+/// Declares the problem details namespace on the root element.
+///
+/// quick-xml writes a field named `@xmlns` as an attribute of the enclosing
+/// element, and flattening the problem details behind it leaves its members as
+/// child elements of `<problem>`, exactly as they were without the wrapper.
+#[derive(serde::Serialize)]
+struct WithNamespace<'a, Ext> {
+    #[serde(rename = "@xmlns")]
+    xmlns: &'static str,
+
+    #[serde(flatten)]
+    problem: &'a ProblemDetails<Ext>,
 }
 
 impl<Ext> From<ProblemDetails<Ext>> for XmlProblemDetails<Ext> {
