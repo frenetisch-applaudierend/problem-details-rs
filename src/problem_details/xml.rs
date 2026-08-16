@@ -30,7 +30,7 @@ where
     /// Write this problem details to an XML string suitable for a response body.
     pub fn to_body_string(&self) -> Result<String, XmlError> {
         let xml = quick_xml::se::to_string_with_root("problem", &self.0)
-            .map_err(XmlError::Serialization)?;
+            .map_err(XmlError::serialization)?;
         let xml = format!(r#"<?xml version="1.0" encoding="UTF-8"?>{xml}"#);
 
         Ok(xml)
@@ -58,29 +58,49 @@ impl<Ext> std::error::Error for XmlProblemDetails<Ext> where Ext: std::fmt::Debu
 
 /// An error that occurred while writing a
 /// [`XmlProblemDetails`] to a response body.
-#[derive(Clone, Debug)]
-#[non_exhaustive]
-pub enum XmlError {
-    /// The problem details could not be serialized to XML.
+///
+/// The underlying error is deliberately not exposed as a concrete type, so that
+/// the XML backend stays an implementation detail. Use [`XmlError::get_ref`] or
+/// [`std::error::Error::source`] to inspect it.
+#[derive(Clone)]
+pub struct XmlError {
+    kind: ErrorKind,
+}
+
+#[derive(Clone)]
+enum ErrorKind {
     Serialization(quick_xml::SeError),
+}
+
+impl XmlError {
+    pub(crate) fn serialization(err: quick_xml::SeError) -> Self {
+        Self {
+            kind: ErrorKind::Serialization(err),
+        }
+    }
+
+    pub fn get_ref(&self) -> &(dyn std::error::Error + 'static) {
+        match &self.kind {
+            ErrorKind::Serialization(err) => err,
+        }
+    }
+}
+
+impl std::fmt::Debug for XmlError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // Done by hand to hide the private ErrorKind enum
+        f.debug_tuple("XmlError").field(&self.get_ref()).finish()
+    }
 }
 
 impl std::fmt::Display for XmlError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            "Could not write body: {}",
-            match self {
-                Self::Serialization(err) => err,
-            }
-        )
+        write!(f, "Could not write body: {}", self.get_ref())
     }
 }
 
 impl std::error::Error for XmlError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        match self {
-            Self::Serialization(err) => Some(err),
-        }
+        Some(self.get_ref())
     }
 }
