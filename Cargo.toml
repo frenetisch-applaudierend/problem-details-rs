@@ -1,6 +1,6 @@
 [package]
 name = "problem_details"
-version = "0.9.0"
+version = "0.10.0"
 authors = ["Markus Gasser <markus.gasser@jakku.ch>"]
 edition = "2024"
 rust-version = "1.85"
