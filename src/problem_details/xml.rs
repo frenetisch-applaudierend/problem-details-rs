@@ -79,6 +79,7 @@ impl XmlError {
         }
     }
 
+    /// Returns a reference to the underlying error.
     pub fn get_ref(&self) -> &(dyn std::error::Error + 'static) {
         match &self.kind {
             ErrorKind::Serialization(err) => err,
