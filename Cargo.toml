@@ -10,6 +10,9 @@ license = "MIT OR Apache-2.0"
 keywords = ["http", "problem-details", "rfc9457", "rfc7807"]
 categories = ["web-programming"]
 
+# Development and release tooling is of no use to consumers of the crate.
+exclude = [".github/", ".gitignore", "release.toml", "Releasing.md"]
+
 [package.metadata.docs.rs]
 all-features = true
 

@@ -2,6 +2,8 @@
 
 All notable changes to `problem_details` are documented here. Breaking changes are marked with ⚠️.
 
+## [Unreleased]
+
 ## [0.10.0] - 2026-08-16
 
 - The MSRV is now declared in `Cargo.toml` as `rust-version = "1.85"`.
