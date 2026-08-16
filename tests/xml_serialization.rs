@@ -298,7 +298,6 @@ fn ext_nested() {
 /// faithful option is to leave the member out: `<absent/>` is a positive claim
 /// that the value is the empty string, and reads back as `Some("")`.
 #[test]
-#[ignore = "finding #24: a None extension is written as an empty element, not omitted"]
 fn ext_option_none() {
     assert_xml_body(
         cases::ext_option_none(),
