@@ -26,7 +26,9 @@ http-serde = { version = "2.1", default-features = false, optional = true }
 # `poem::addr` unconditionally references `tokio::net::unix::SocketAddr`, and
 # `tokio/net` is only enabled via `server`. Drop this once poem gates that properly.
 poem = { version = "3.1", default-features = false, features = ["server"], optional = true }
-quick-xml = { version = "0.41", default-features = false, features = ["serialize"], optional = true }
+# Only `quick_xml::escape` is used — the XML body is written by `problem_details::xml::ser`,
+# because quick-xml's own serializer cannot produce the `<i>` array form RFC 9457 Appendix B wants.
+quick-xml = { version = "0.41", default-features = false, optional = true }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"], optional = true }
 serde_json = { version = "1.0", default-features = false, features = ["std"], optional = true }
 actix-web = { version = "4.11", default-features = false, optional = true }

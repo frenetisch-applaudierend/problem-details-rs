@@ -1,3 +1,5 @@
+mod ser;
+
 use crate::ProblemDetails;
 
 /// ProblemDetails that is encoded to XML when
@@ -31,32 +33,14 @@ where
     Ext: serde::Serialize,
 {
     /// Write this problem details to an XML string suitable for a response body.
+    ///
+    /// The document follows RFC 9457 Appendix B: a `<problem>` root element in
+    /// the [`NAMESPACE`](Self::NAMESPACE) namespace, one child element per
+    /// member, and one `<i>` element per item of a member that is an array.
     pub fn to_body_string(&self) -> Result<String, XmlError> {
-        let root = WithNamespace {
-            xmlns: Self::NAMESPACE,
-            problem: &self.0,
-        };
-
-        let xml =
-            quick_xml::se::to_string_with_root("problem", &root).map_err(XmlError::serialization)?;
-        let xml = format!(r#"<?xml version="1.0" encoding="UTF-8"?>{xml}"#);
-
-        Ok(xml)
+        ser::to_document_string(&self.0, "problem", Self::NAMESPACE)
+            .map_err(XmlError::serialization)
     }
-}
-
-/// Declares the problem details namespace on the root element.
-///
-/// quick-xml writes a field named `@xmlns` as an attribute of the enclosing
-/// element, and flattening the problem details behind it leaves its members as
-/// child elements of `<problem>`, exactly as they were without the wrapper.
-#[derive(serde::Serialize)]
-struct WithNamespace<'a, Ext> {
-    #[serde(rename = "@xmlns")]
-    xmlns: &'static str,
-
-    #[serde(flatten)]
-    problem: &'a ProblemDetails<Ext>,
 }
 
 impl<Ext> From<ProblemDetails<Ext>> for XmlProblemDetails<Ext> {
@@ -91,11 +75,11 @@ pub struct XmlError {
 
 #[derive(Clone)]
 enum ErrorKind {
-    Serialization(quick_xml::SeError),
+    Serialization(ser::Error),
 }
 
 impl XmlError {
-    pub(crate) fn serialization(err: quick_xml::SeError) -> Self {
+    fn serialization(err: ser::Error) -> Self {
         Self {
             kind: ErrorKind::Serialization(err),
         }
