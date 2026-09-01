@@ -53,6 +53,16 @@ where
     }
 }
 
+#[cfg(feature = "json")]
+impl<Ext> IntoResponse for Box<JsonProblemDetails<Ext>>
+where
+    Ext: serde::Serialize,
+{
+    fn into_response(self) -> Response {
+        (*self).into_response()
+    }
+}
+
 #[cfg(feature = "xml")]
 impl<Ext> IntoResponse for XmlProblemDetails<Ext>
 where
@@ -73,6 +83,16 @@ where
     }
 }
 
+#[cfg(feature = "xml")]
+impl<Ext> IntoResponse for Box<XmlProblemDetails<Ext>>
+where
+    Ext: serde::Serialize,
+{
+    fn into_response(self) -> Response {
+        (*self).into_response()
+    }
+}
+
 #[cfg(feature = "json")]
 impl<Ext> IntoResponse for ProblemDetails<Ext>
 where
@@ -80,5 +100,15 @@ where
 {
     fn into_response(self) -> Response {
         JsonProblemDetails(self).into_response()
+    }
+}
+
+#[cfg(feature = "json")]
+impl<Ext> IntoResponse for Box<ProblemDetails<Ext>>
+where
+    Ext: serde::Serialize,
+{
+    fn into_response(self) -> Response {
+        (*self).into_response()
     }
 }
