@@ -21,6 +21,12 @@ pub struct XmlProblemDetails<Ext = ()>(pub(crate) ProblemDetails<Ext>);
 impl<Ext> XmlProblemDetails<Ext> {
     /// The HTTP content type for a xml problem details.
     pub const CONTENT_TYPE: &'static str = "application/problem+xml";
+
+    /// Boxes this problem details object.
+    #[must_use]
+    pub fn boxed(self) -> Box<Self> {
+        Box::new(self)
+    }
 }
 
 impl<Ext> XmlProblemDetails<Ext>
@@ -46,6 +52,12 @@ impl<Ext> From<ProblemDetails<Ext>> for XmlProblemDetails<Ext> {
 impl<Ext> From<XmlProblemDetails<Ext>> for ProblemDetails<Ext> {
     fn from(value: XmlProblemDetails<Ext>) -> Self {
         value.0
+    }
+}
+
+impl<Ext> From<ProblemDetails<Ext>> for Box<XmlProblemDetails<Ext>> {
+    fn from(value: ProblemDetails<Ext>) -> Self {
+        Box::new(value.into())
     }
 }
 impl<Ext> std::fmt::Display for XmlProblemDetails<Ext> {

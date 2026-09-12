@@ -251,6 +251,12 @@ impl<Ext> ProblemDetails<Ext> {
             extensions,
         }
     }
+
+    /// Boxes this problem details object.
+    #[must_use]
+    pub fn boxed(self) -> Box<Self> {
+        Box::new(self)
+    }
 }
 
 impl<Ext> std::fmt::Display for ProblemDetails<Ext> {

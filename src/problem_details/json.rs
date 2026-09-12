@@ -21,6 +21,12 @@ pub struct JsonProblemDetails<Ext = ()>(pub(crate) ProblemDetails<Ext>);
 impl<Ext> JsonProblemDetails<Ext> {
     /// The HTTP content type for a json problem details.
     pub const CONTENT_TYPE: &'static str = "application/problem+json";
+
+    /// Boxes this problem details object.
+   #[must_use]
+    pub fn boxed(self) -> Box<Self> {
+        Box::new(self)
+    }
 }
 
 impl<Ext> JsonProblemDetails<Ext>
@@ -42,6 +48,12 @@ impl<Ext> From<ProblemDetails<Ext>> for JsonProblemDetails<Ext> {
 impl<Ext> From<JsonProblemDetails<Ext>> for ProblemDetails<Ext> {
     fn from(value: JsonProblemDetails<Ext>) -> Self {
         value.0
+    }
+}
+
+impl<Ext> From<ProblemDetails<Ext>> for Box<JsonProblemDetails<Ext>> {
+    fn from(value: ProblemDetails<Ext>) -> Self {
+        Box::new(value.into())
     }
 }
 impl<Ext> std::fmt::Display for JsonProblemDetails<Ext> {

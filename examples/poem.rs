@@ -17,19 +17,17 @@ async fn main() -> Result<(), std::io::Error> {
 #[handler]
 async fn default() -> Result<&'static str, Box<ProblemDetails>> {
     // always return an error with a problem description
-    Err(Box::new(
-        ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT).with_detail("short and stout"),
-    ))
+    Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
+        .with_detail("short and stout")
+        .into())
 }
 
 #[handler]
 async fn json() -> Result<&'static str, Box<JsonProblemDetails>> {
     // always return an error with a problem description
-    Err(Box::new(
-        ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
-            .with_detail("short and stout")
-            .into(),
-    ))
+    Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
+        .with_detail("short and stout")
+        .into())
 }
 
 #[handler]
@@ -37,9 +35,7 @@ async fn xml() -> Result<&'static str, Box<XmlProblemDetails>> {
     // always return an error with a problem description
     // NOTE: some browsers don't like the content type application/problem+xml and report an error
     //       like "invalid content" or similar. Use curl instead to see the response in this case.
-    Err(Box::new(
-        ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
-            .with_detail("short and stout")
-            .into(),
-    ))
+    Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
+        .with_detail("short and stout")
+        .into())
 }
