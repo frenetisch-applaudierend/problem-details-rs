@@ -57,6 +57,20 @@ where
 }
 
 #[cfg(feature = "json")]
+impl<Ext> ResponseError for Box<ProblemDetails<Ext>>
+where
+    Ext: serde::Serialize + Debug,
+{
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        self.as_ref().status_code()
+    }
+
+    fn error_response(&self) -> HttpResponse {
+        self.as_ref().error_response()
+    }
+}
+
+#[cfg(feature = "json")]
 impl<Ext> ResponseError for JsonProblemDetails<Ext>
 where
     Ext: serde::Serialize + Debug,
@@ -69,6 +83,20 @@ where
         HttpResponse::build(self.status_code())
             .content_type(JsonProblemDetails::<Ext>::CONTENT_TYPE)
             .json(&self.0)
+    }
+}
+
+#[cfg(feature = "json")]
+impl<Ext> ResponseError for Box<JsonProblemDetails<Ext>>
+where
+    Ext: serde::Serialize + Debug,
+{
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        self.as_ref().status_code()
+    }
+
+    fn error_response(&self) -> HttpResponse {
+        self.as_ref().error_response()
     }
 }
 
@@ -93,6 +121,20 @@ where
         HttpResponse::build(self.status_code())
             .content_type(XmlProblemDetails::<Ext>::CONTENT_TYPE)
             .body(content)
+    }
+}
+
+#[cfg(feature = "xml")]
+impl<Ext> ResponseError for Box<XmlProblemDetails<Ext>>
+where
+    Ext: serde::Serialize + Debug,
+{
+    fn status_code(&self) -> actix_web::http::StatusCode {
+        self.as_ref().status_code()
+    }
+
+    fn error_response(&self) -> HttpResponse {
+        self.as_ref().error_response()
     }
 }
 

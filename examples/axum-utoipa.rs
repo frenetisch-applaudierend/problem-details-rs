@@ -29,9 +29,11 @@ async fn main() {
         (status = IM_A_TEAPOT, body = ProblemDetails, description = "I'm a teapot!"),
     ),
 )]
-async fn default() -> Result<&'static str, ProblemDetails> {
+async fn default() -> Result<&'static str, Box<ProblemDetails>> {
     // always return an error with a problem description
-    Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT).with_detail("short and stout"))
+    Err(Box::new(
+        ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT).with_detail("short and stout"),
+    ))
 }
 
 /// ProblemDetails in JSON format
@@ -48,11 +50,13 @@ async fn default() -> Result<&'static str, ProblemDetails> {
         ),
     ),
 )]
-async fn json() -> Result<&'static str, JsonProblemDetails> {
+async fn json() -> Result<&'static str, Box<JsonProblemDetails>> {
     // always return an error with a problem description
-    Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
-        .with_detail("short and stout")
-        .into())
+    Err(Box::new(
+        ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
+            .with_detail("short and stout")
+            .into(),
+    ))
 }
 
 /// ProblemDetails in XML format
@@ -69,11 +73,13 @@ async fn json() -> Result<&'static str, JsonProblemDetails> {
         ),
     ),
 )]
-async fn xml() -> Result<&'static str, XmlProblemDetails> {
+async fn xml() -> Result<&'static str, Box<XmlProblemDetails>> {
     // always return an error with a problem description
     // NOTE: some browsers don't like the content type application/problem+xml and report an error
     //       like "invalid content" or similar. Use curl instead to see the response in this case.
-    Err(ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
-        .with_detail("short and stout")
-        .into())
+    Err(Box::new(
+        ProblemDetails::from_status_code(StatusCode::IM_A_TEAPOT)
+            .with_detail("short and stout")
+            .into(),
+    ))
 }

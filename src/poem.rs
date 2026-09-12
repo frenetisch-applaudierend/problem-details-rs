@@ -53,6 +53,20 @@ where
 }
 
 #[cfg(feature = "json")]
+impl<Ext> ResponseError for Box<ProblemDetails<Ext>>
+where
+    Ext: serde::Serialize + Clone + Send,
+{
+    fn status(&self) -> StatusCode {
+        self.as_ref().status()
+    }
+
+    fn as_response(&self) -> poem::Response {
+        self.as_ref().clone().into_response()
+    }
+}
+
+#[cfg(feature = "json")]
 impl<Ext> ResponseError for JsonProblemDetails<Ext>
 where
     Ext: serde::Serialize + Clone + Send,
@@ -63,6 +77,20 @@ where
 
     fn as_response(&self) -> poem::Response {
         self.clone().into_response()
+    }
+}
+
+#[cfg(feature = "json")]
+impl<Ext> ResponseError for Box<JsonProblemDetails<Ext>>
+where
+    Ext: serde::Serialize + Clone + Send,
+{
+    fn status(&self) -> StatusCode {
+        self.as_ref().status()
+    }
+
+    fn as_response(&self) -> poem::Response {
+        self.as_ref().clone().into_response()
     }
 }
 
@@ -77,6 +105,20 @@ where
 
     fn as_response(&self) -> poem::Response {
         self.clone().into_response()
+    }
+}
+
+#[cfg(feature = "xml")]
+impl<Ext> ResponseError for Box<XmlProblemDetails<Ext>>
+where
+    Ext: serde::Serialize + Clone + Send,
+{
+    fn status(&self) -> StatusCode {
+        self.as_ref().status()
+    }
+
+    fn as_response(&self) -> poem::Response {
+        self.as_ref().clone().into_response()
     }
 }
 
