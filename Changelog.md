@@ -2,6 +2,8 @@
 
 All notable changes to `problem_details` are documented here. Breaking changes are marked with ⚠️.
 
+## [Unreleased]
+
 ## [0.11.0] - 2026-10-16
 
 - `Box<ProblemDetails>`, `Box<JsonProblemDetails>` and `Box<XmlProblemDetails>` now implement `IntoResponse` (`axum`) and `ResponseError` (`actix`, `poem`), so handlers can return `Result<T, Box<ProblemDetails<Ext>>>` to avoid clippy's `result_large_err` lint on large `Ext` types. (thanks @MatteoH2O1999)
