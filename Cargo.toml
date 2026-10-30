@@ -51,6 +51,10 @@ actix = ["dep:actix-web"]
 utoipa = ["dep:utoipa"]
 
 [[example]]
+name = "acme"
+required-features = ["json"]
+
+[[example]]
 name = "axum"
 required-features = ["axum", "json", "xml"]
 

@@ -27,13 +27,31 @@ use http::Uri;
 /// let default_type = ProblemType::default();
 /// assert_eq!(default_type.to_string(), "about:blank");
 /// ```
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct ProblemType(#[cfg_attr(feature = "serde", serde(with = "crate::serde::uri"))] Uri);
+#[cfg_attr(feature = "serde", serde(transparent))]
+pub struct ProblemType(String);
+
+impl ProblemType {
+    /// Creates a problem type from any string without validating it.
+    ///
+    /// The caller is responsible for passing a valid URI reference as defined by
+    /// [RFC 3986](https://www.rfc-editor.org/rfc/rfc3986). Absolute URIs are recommended.
+    #[must_use]
+    pub fn unchecked(value: impl Into<String>) -> Self {
+        Self(value.into())
+    }
+
+    /// Returns the problem type as a string slice.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
+}
 
 impl std::default::Default for ProblemType {
     fn default() -> Self {
-        Self(Uri::from_static("about:blank"))
+        Self::unchecked("about:blank")
     }
 }
 
@@ -45,50 +63,34 @@ impl std::fmt::Display for ProblemType {
 
 impl std::convert::From<Uri> for ProblemType {
     fn from(value: Uri) -> Self {
-        ProblemType(value)
+        Self(value.to_string())
     }
 }
 
-impl std::convert::From<ProblemType> for Uri {
-    fn from(value: ProblemType) -> Self {
-        value.0
+impl std::convert::From<&Uri> for ProblemType {
+    fn from(value: &Uri) -> Self {
+        Self(value.to_string())
     }
 }
 
-impl std::ops::Deref for ProblemType {
-    type Target = Uri;
+impl std::convert::TryFrom<ProblemType> for Uri {
+    type Error = http::uri::InvalidUri;
 
-    fn deref(&self) -> &Self::Target {
+    fn try_from(value: ProblemType) -> Result<Self, Self::Error> {
+        value.0.try_into()
+    }
+}
+
+impl std::convert::TryFrom<&ProblemType> for Uri {
+    type Error = http::uri::InvalidUri;
+
+    fn try_from(value: &ProblemType) -> Result<Self, Self::Error> {
+        value.0.parse()
+    }
+}
+
+impl std::convert::AsRef<str> for ProblemType {
+    fn as_ref(&self) -> &str {
         &self.0
-    }
-}
-
-impl std::ops::DerefMut for ProblemType {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.0
-    }
-}
-
-impl std::borrow::Borrow<Uri> for ProblemType {
-    fn borrow(&self) -> &Uri {
-        &self.0
-    }
-}
-
-impl std::borrow::BorrowMut<Uri> for ProblemType {
-    fn borrow_mut(&mut self) -> &mut Uri {
-        &mut self.0
-    }
-}
-
-impl std::convert::AsRef<Uri> for ProblemType {
-    fn as_ref(&self) -> &Uri {
-        &self.0
-    }
-}
-
-impl std::convert::AsMut<Uri> for ProblemType {
-    fn as_mut(&mut self) -> &mut Uri {
-        &mut self.0
     }
 }
